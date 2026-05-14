@@ -1,0 +1,53 @@
+<app-header></app-header>
+<div class="destino-container">
+  <header class="header">
+    <h1>Gestión de Destinos</h1>
+    <p>Administración de destinos</p>
+  </header>
+  
+  <div class="destino-actions">
+    <input class="search" type="text" placeholder="Buscar destino..."
+       [(ngModel)]="searchText" />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Destino</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let dest of destinos | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ dest.descripcion }}</td>
+        <td class="actions">
+          <button class="edit" (click)="editarDestino(dest)">✏️</button>
+          <button class="delete" (click)="eliminarDestino(dest.id_destino)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">🌍</span>
+      <h2>{{ destinoEditando ? 'Editar Destino' : 'Nuevo Destino' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+               [(ngModel)]="nuevoDestino.descripcion" name="descripcion" />
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarDestino()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

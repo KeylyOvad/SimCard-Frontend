@@ -1,0 +1,54 @@
+<app-header></app-header>
+<div class="tiposim-container">
+  <header class="header">
+    <h1>Gestión de Tipos de SIM</h1>
+    <p>Administración de tipos de tarjeta SIM</p>
+  </header>
+  <div class="tiposim-actions">
+    <input
+      class="search"
+      type="text"
+      placeholder="Buscar tipo..."
+      [(ngModel)]="searchText"
+    />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Tipo SIM</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let tipo of tiposim | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ tipo.descripcion }}</td>
+        <td class="actions">
+          <button class="edit" (click)="editarTipoSim(tipo)">✏️</button>
+          <button class="delete" (click)="eliminarTipoSim(tipo.id_tiposim)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">🔖</span>
+      <h2>{{ tipoEditando ? 'Editar Tipo SIM' : 'Nuevo Tipo SIM' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+          [(ngModel)]="nuevoTipo.descripcion" name="descripcion" />
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarTipoSim()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

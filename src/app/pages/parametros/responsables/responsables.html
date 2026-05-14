@@ -1,0 +1,50 @@
+<app-header></app-header>
+<div class="responsable-container">
+  <header class="header">
+    <h1>Gestión de Responsables</h1>
+    <p>Administración de responsables</p>
+  </header>
+  <div class="responsable-actions">
+    <input class="search" type="text" placeholder="Buscar responsable..."
+           [(ngModel)]="searchText" />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Responsable</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let resp of responsables | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ resp.descripcion }}</td>
+        <td class="actions">
+          <button class="edit" (click)="editarResponsable(resp)">✏️</button>
+          <button class="delete" (click)="eliminarResponsable(resp.id_responsable)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">👤</span>
+      <h2>{{ responsableEditando ? 'Editar Responsable' : 'Nuevo Responsable' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+               [(ngModel)]="nuevoResponsable.descripcion" name="descripcion" />
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarResponsable()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+

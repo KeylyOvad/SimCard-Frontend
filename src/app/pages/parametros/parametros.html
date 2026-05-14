@@ -1,0 +1,45 @@
+<app-header></app-header>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+<div class="mega-menu">
+  <div class="menu-section">
+    <p class="section-title">Servicio</p>
+    <div class="items-grid">
+      <a class="menu-card" [routerLink]="['/parametros/operadores']">
+        <div class="icon-chip"><i class="fas fa-broadcast-tower"></i></div><span>Operadores</span>
+      </a>
+      <a class="menu-card" [routerLink]="['/parametros/planes']">
+        <div class="icon-chip"><i class="fas fa-clipboard-list"></i></div><span>Planes</span>
+      </a>
+      <a class="menu-card" [routerLink]="['/parametros/simcard']">
+        <div class="icon-chip"><i class="fas fa-sim-card"></i></div><span>SimCard</span>
+      </a>
+      <a class="menu-card" [routerLink]="['/parametros/capacidad']">
+        <div class="icon-chip"><i class="fas fa-chart-bar"></i></div><span>Capacidad</span>
+      </a>
+    </div>
+  </div>
+  <div class="menu-section">
+    <p class="section-title">Posición</p>
+    <div class="items-grid">
+      <a class="menu-card" [routerLink]="['/parametros/ubicaciones']">
+        <div class="icon-chip"><i class="fas fa-map-marker-alt"></i></div><span>Ubicaciones</span>
+      </a>
+      <a class="menu-card" [routerLink]="['/parametros/destinos']">
+        <div class="icon-chip"><i class="fas fa-route"></i></div><span>Destinos</span>
+      </a>
+      <a class="menu-card" [routerLink]="['/parametros/responsables']">
+        <div class="icon-chip"><i class="fas fa-user"></i></div><span>Responsables</span>
+      </a>
+    </div>
+  </div>
+  <div class="menu-section">
+    <p class="section-title">Condición</p>
+    <div class="items-grid">
+      <a class="menu-card" [routerLink]="['/parametros/estados']">
+        <div class="icon-chip"><i class="fas fa-clipboard-check"></i></div><span>Estados</span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<app-header></app-header>
+<div class="usuarios-container">
+   <header class="header">
+     <h1>Gestión de Usuarios</h1>
+     <p>Administración de cuentas</p>
+     </header>
+ <div class="usuarios-actions">
+      <input
+       class="search"
+       type="text"
+       placeholder="Buscar usuario..."
+       [(ngModel)]="searchText"
+     />
+     <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Usuario</button>
+     </div>
+<table>
+     <thead>
+     <tr>
+     <th>Nombre</th>
+     <th>Correo</th>
+     <th>Estado</th>
+     <th>Acción</th>
+
+ </tr>
+    </thead>
+    <tbody>
+ <tr *ngFor="let usuario of usuarios">
+    <td>{{ usuario.nombre }}</td>
+    <td>{{ usuario.correo }}</td>
+   <td>
+      <span 
+       [class.activo]="usuario.estado === 'Activo'"
+       [class.inactivo]="usuario.estado === 'Inactivo'"
+      >
+       {{ usuario.estado }}
+     </span>
+ </td>
+      <td class="actions">
+      <button class="edit" (click)="editarUsuario(usuario)">✏️</button>
+      <button class="delete" (click)="eliminarUsuario(usuario)">🗑️</button>
+
+    </td>
+ </tr>
+</tbody>
+</table>
+</div>
+
+      <div class="modal-overlay" *ngIf="modalAbierto">
+      <div class="modal">
+      <div class="modal-header">
+      <span class="icon">➕</span>
+      <h2>Nuevo Usuario</h2>
+</div>
+      <form class="modal-body">
+      <div class="form-grid">
+      <div class="form-group">
+      <input type="text" placeholder="Nombres"
+      [(ngModel)]="nuevoUsuario.nombres" name="nombres" />
+ </div>
+       <div class="form-group">
+       <input type="text" placeholder="Apellidos"
+       [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" />
+        </div>
+  </div>
+        <div class="form-group full">
+        <input type="email" placeholder="Correo"
+        [(ngModel)]="nuevoUsuario.correo" name="correo" />
+   </div>
+    <div class="form-grid">
+     <div class="form-group">
+        <input type="password" placeholder="Contraseña"
+         [(ngModel)]="nuevoUsuario.contrasena" name="contrasena" />
+        </div>
+        <div class="form-group">
+        <input type="password" placeholder="Confirmar Contraseña"
+        [(ngModel)]="nuevoUsuario.confirmar" name="confirmar" />
+        </div>
+     </div>
+
+        <div class="form-group full">
+        <select [(ngModel)]="nuevoUsuario.estado" name="estado">
+        <option>Activo</option>
+        <option>Inactivo</option>
+        </select>
+  </div>
+
+       </form>
+      <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarUsuario()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+</div>
+   </div>
+</div>
+

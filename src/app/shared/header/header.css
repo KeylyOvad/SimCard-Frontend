@@ -1,0 +1,52 @@
+.top-bar {
+  height: 60px;
+  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.logo {
+  height: 60px;
+  width: auto;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+}
+
+nav a {
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #e8f5e9;
+  transform: translateY(-2px);
+}
+
+nav a.active {
+  background: white;
+  color: #0d8b4a;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.top-right {
+  font-weight: 600;
+  color: white;
+}

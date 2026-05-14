@@ -1,0 +1,56 @@
+<app-header></app-header>
+
+<div class="operadores-container">
+  <header class="header">
+    <h1>Gestión de Operadores</h1>
+    <p>Administración de operadores de SIM</p>
+  </header>
+
+  <div class="operadores-actions">
+    <input
+      class="search"
+      type="text"
+      placeholder="Buscar operador..."
+      [(ngModel)]="searchText"
+    />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Operador</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+   <tbody>
+    <tr *ngFor="let operador of operadores | filter:searchText:['descripcion']; let i = index">
+    <td>{{ i + 1 }}</td> 
+    <td>{{ operador.descripcion }}</td>
+    <td class="actions">
+      <button class="edit" (click)="editarOperador(operador)">✏️</button>
+      <button class="delete" (click)="eliminarOperador(operador.id_operador)">🗑️</button>
+    </td>
+  </tr>
+</tbody>
+  </table>
+</div>
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">📶</span>
+      <h2>{{ operadorEditando ? 'Editar Operador' : 'Nuevo Operador' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+          [(ngModel)]="nuevoOperador.descripcion" name="descripcion" />
+     </div>
+   </form>
+
+     <div class="modal-footer">
+       <button type="button" class="btn-guardar" (click)="guardarOperador()">Guardar</button>
+       <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+     </div>
+</div>
+</div>

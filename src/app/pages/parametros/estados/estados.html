@@ -1,0 +1,50 @@
+<app-header></app-header>
+<div class="estado-container">
+  <header class="header">
+    <h1>Gestión de Estados</h1>
+    <p>Administración de estados</p>
+  </header>
+
+  <div class="estado-actions">
+    <input class="search" type="text" placeholder="Buscar estado..."
+           [(ngModel)]="searchText" />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Estado</button>
+  </div>
+   <table>
+       <thead>
+          <tr>
+            <th>ID</th>
+            <th>Descripción</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+     <tbody>
+        <tr *ngFor="let est of estados | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ est.descripcion }}</td>
+        <td class="actions">
+            <button class="edit" (click)="editarEstado(est)">✏️</button>
+            <button class="delete" (click)="eliminarEstado(est.id_estado)">🗑️</button>
+        </td>
+         </tr>
+   </tbody>
+    </table>
+   </div>
+    <div class="modal-overlay" *ngIf="modalAbierto">
+       <div class="modal">
+       <div class="modal-header">
+        <span class="icon">📌</span>
+         <h2>{{ estadoEditando ? 'Editar Estado' : 'Nuevo Estado' }}</h2>
+             </div>
+         <form class="modal-body">
+              <div class="form-group full">
+            <input type="text" placeholder="Descripción"
+               [(ngModel)]="nuevoEstado.descripcion" name="descripcion" />
+     </div>
+     </form>
+
+            <div class="modal-footer">
+              <button type="button" class="btn-guardar" (click)="guardarEstado()">Guardar</button>      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+            </div>
+    </div>
+</div>

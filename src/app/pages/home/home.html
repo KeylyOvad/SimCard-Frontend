@@ -1,0 +1,87 @@
+
+<app-header></app-header>
+<div class="home-container">
+
+  <header class="header">
+    <h1>Sim Cards CENS</h1>
+    <p>Gestión de tarjetas SIM</p>
+  </header>
+
+  
+  <section class="stats">
+    <div class="stat-card">
+      <h2>{{ stats.total }}</h2>
+      <span>Total registros</span>
+    </div>
+
+
+    <div class="stat-card">
+      <h2>{{ stats.operators }}</h2>
+      <span>Operadores</span>
+    </div>
+  </section>
+
+
+  <div class="actions-bar">
+    <button class="btn primary" (click)="uploadExcel()">Cargar Excel</button>
+    <button class="btn warning" (click)="generateReport()">Reporte General</button>
+    <button class="btn success" (click)="addSim()">+ Agregar SIM</button>
+  </div>
+
+  
+  <input
+    class="search"
+    type="text"
+    placeholder="Buscar SIM..."
+    [(ngModel)]="searchText"
+  />
+
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Nº Línea</th>
+        <th>Operador</th>
+        <th>Serial Sim Card</th>
+        <th>Plan</th>
+        <th>Capacidad</th>
+        <th>Responsable</th>
+        <th>Destino</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let sim of paginatedSims">
+        <td>{{ sim.num_linea }}</td>
+        <td>{{ sim.operador }}</td>
+        <td>{{ sim.num_sim }}</td>
+        <td>{{ sim.plan }}</td>
+        <td>{{ sim.capacidad }}</td>
+        <td>{{ sim.responsable }}</td>
+        <td>{{ sim.destino }}</td>
+
+        <td
+          [class.sim-active]="sim.estado === 'Activa'"
+          [class.sim-inactive]="sim.estado === 'Desactivada'"
+        >
+          {{ sim.estado }}
+        </td>
+
+        <td class="actions">
+          <button class="edit" (click)="editSim(sim)">✏️</button>
+          <button class="delete" (click)="deleteSim(sim)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <div class="pagination">
+    <button (click)="prevPage()">Anterior</button>
+    <span>Página {{ currentPage }}</span>
+    <button (click)="nextPage()">Siguiente</button>
+  </div>
+
+</div>

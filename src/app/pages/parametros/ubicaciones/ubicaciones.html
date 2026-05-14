@@ -1,0 +1,50 @@
+<app-header></app-header>
+
+<div class="ubicacion-container">
+  <header class="header">
+    <h1>Gestión de Ubicaciones</h1>
+    <p>Administración de ubicaciones</p>
+  </header>
+  <div class="ubicacion-actions">
+    <input class="search" type="text" placeholder="Buscar ubicación..."
+           [(ngModel)]="searchText" />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Ubicación</button>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ubi of ubicaciones | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ ubi.descripcion }}</td>
+        <td class="actions">
+          <button class="edit" (click)="editarUbicacion(ubi)">✏️</button>
+          <button class="delete" (click)="eliminarUbicacion(ubi.id_ubicacion)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">📍</span>
+      <h2>{{ ubicacionEditando ? 'Editar Ubicación' : 'Nueva Ubicación' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+               [(ngModel)]="nuevaUbicacion.descripcion" name="descripcion" />
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarUbicacion()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>

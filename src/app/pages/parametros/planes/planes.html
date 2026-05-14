@@ -1,0 +1,55 @@
+<app-header></app-header>
+
+<div class="planes-container">
+  <header class="header">
+    <h1>Gestión de Planes</h1>
+    <p>Administración de planes de SIM</p>
+  </header>
+  <div class="planes-actions">
+    <input
+      class="search"
+      type="text"
+      placeholder="Buscar plan..."
+      [(ngModel)]="searchText"
+    />
+    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Plan</button>
+</div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let plan of planes | filter:searchText:['descripcion']; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ plan.descripcion }}</td>
+        <td class="actions">
+          <button class="edit" (click)="editarPlan(plan)">✏️</button>
+          <button class="delete" (click)="eliminarPlan(plan.id_plan)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-overlay" *ngIf="modalAbierto">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="icon">📋</span>
+      <h2>{{ planEditando ? 'Editar Plan' : 'Nuevo Plan' }}</h2>
+    </div>
+    <form class="modal-body">
+      <div class="form-group full">
+        <input type="text" placeholder="Descripción"
+          [(ngModel)]="nuevoPlan.descripcion" name="descripcion" />
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button type="button" class="btn-guardar" (click)="guardarPlan()">Guardar</button>
+      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </div>
+</div>

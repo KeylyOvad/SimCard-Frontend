@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; // Añadido para el historial
 
 import { SimService } from '../../services/sim.service';
 import { Sim } from '../../interceptors/models/sim.model';
@@ -30,10 +31,16 @@ export class Home implements OnInit {
     operators: 0,
   };
 
+  // --- NUEVAS VARIABLES PARA EL HISTORIAL ---
+  historialSim: any[] = [];
+  mostrarModalHistorial: boolean = false;
+  simSeleccionadaNumero: string = '';
+
   constructor(
     private router: Router,
     private simService: SimService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private http: HttpClient // Inyectado
   ) {}
 
   ngOnInit() {
@@ -100,19 +107,63 @@ export class Home implements OnInit {
     console.log('Subir Excel');
   }
 
-  generateReport() {
-    console.log('Generar reporte');
-  }
+ generateReport() {
+  const url = 'http://localhost:3000/api/reportes/excel-general';
+  window.location.href = url;
+}
 
   addSim() {
-    console.log('Agregar SIM');
+    this.router.navigate(['/sim-form']); // Redirigir al formulario vacío
   }
 
-  editSim(sim: Sim) {
-    console.log('Editar:', sim);
+  // --- NUEVAS FUNCIONES PARA EL HISTORIAL ---
+  verHistorial(sim: any) {
+    const id = sim.id_sim;
+    this.simSeleccionadaNumero = sim.num_sim;
+
+    this.http.get(`http://localhost:3000/api/sims/${id}/historial`).subscribe({
+      next: (data: any) => {
+        this.historialSim = data;
+        this.mostrarModalHistorial = true;
+      },
+      error: (err) => {
+        console.error('Error al obtener historial:', err);
+        alert("No se pudo cargar el historial.");
+      }
+    });
   }
 
-  deleteSim(sim: Sim) {
-    console.log('Eliminar:', sim);
+  cerrarHistorial() {
+    this.mostrarModalHistorial = false;
+    this.historialSim = [];
+  }
+
+  editSim(sim: any) {
+    const id = sim.id_sim; 
+    if (id) {
+      this.router.navigate(['/sim-form', id]);
+    }
+  }
+
+  deleteSim(sim: any) {
+    const idABorrar = sim.id_sim;
+
+    if (!idABorrar) {
+      alert("❌ No se encontró el ID de este registro.");
+      return;
+    }
+
+    if (confirm(`¿Estás seguro de que deseas eliminar la línea ${sim.num_linea}?`)) {
+      this.simService.deleteSim(idABorrar).subscribe({
+        next: () => {
+          alert("✅ Registro eliminado correctamente.");
+          this.obtenerSims(); 
+        },
+        error: (err: any) => { 
+          console.error('Error al borrar:', err);
+          alert("❌ Hubo un fallo en el servidor al intentar eliminar.");
+        }
+      });
+    }
   }
 }

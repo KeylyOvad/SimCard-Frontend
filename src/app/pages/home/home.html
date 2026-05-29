@@ -1,42 +1,30 @@
-
 <app-header></app-header>
-<div class="home-container">
 
+<div class="home-container">
   <header class="header">
     <h1>Sim Cards CENS</h1>
     <p>Gestión de tarjetas SIM</p>
   </header>
 
-  
   <section class="stats">
     <div class="stat-card">
       <h2>{{ stats.total }}</h2>
       <span>Total registros</span>
     </div>
-
-
     <div class="stat-card">
       <h2>{{ stats.operators }}</h2>
       <span>Operadores</span>
     </div>
   </section>
 
-
   <div class="actions-bar">
     <button class="btn primary" (click)="uploadExcel()">Cargar Excel</button>
     <button class="btn warning" (click)="generateReport()">Reporte General</button>
-    <button class="btn success" (click)="addSim()">+ Agregar SIM</button>
+    <button class="btn success" routerLink="/sim-form"> + Agregar SIM </button>
   </div>
 
-  
-  <input
-    class="search"
-    type="text"
-    placeholder="Buscar SIM..."
-    [(ngModel)]="searchText"
-  />
+  <input class="search" type="text" placeholder="Buscar SIM..." [(ngModel)]="searchText" />
 
-  
   <table>
     <thead>
       <tr>
@@ -51,7 +39,6 @@
         <th>Acción</th>
       </tr>
     </thead>
-
     <tbody>
       <tr *ngFor="let sim of paginatedSims">
         <td>{{ sim.num_linea }}</td>
@@ -61,15 +48,11 @@
         <td>{{ sim.capacidad }}</td>
         <td>{{ sim.responsable }}</td>
         <td>{{ sim.destino }}</td>
-
-        <td
-          [class.sim-active]="sim.estado === 'Activa'"
-          [class.sim-inactive]="sim.estado === 'Desactivada'"
-        >
+        <td [class.sim-active]="sim.estado === 'Activa'" [class.sim-inactive]="sim.estado === 'Desactivada'">
           {{ sim.estado }}
         </td>
-
         <td class="actions">
+          <button class="history" (click)="verHistorial(sim)" title="Ver Historial">📋</button>
           <button class="edit" (click)="editSim(sim)">✏️</button>
           <button class="delete" (click)="deleteSim(sim)">🗑️</button>
         </td>
@@ -77,11 +60,76 @@
     </tbody>
   </table>
 
-
   <div class="pagination">
-    <button (click)="prevPage()">Anterior</button>
+    <button (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
     <span>Página {{ currentPage }}</span>
     <button (click)="nextPage()">Siguiente</button>
   </div>
+</div>
 
+<div class="modal-overlay" *ngIf="mostrarModalHistorial">
+  <div class="modal-card detailed">
+    <div class="modal-header">
+      <h3>📜 Historial de Cambios: {{ simSeleccionadaNumero }}</h3>
+      <button class="close-x" (click)="cerrarHistorial()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="history-list" *ngIf="historialSim && historialSim.length > 0; else noHistory">
+        
+        <div class="history-item-report" *ngFor="let h of historialSim">
+          
+          <div class="report-header">
+            <span class="report-date">MODIFICACIÓN DEL: 
+              <span class="val">{{ h.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</span>
+            </span>
+            <span class="report-user">MODIFICADO POR: 
+              <span class="val">{{ h.nombres }} {{ h.apellidos }}</span>
+            </span>
+          </div>
+
+          <div class="report-grid">
+            <div class="grid-cell"><strong>Número de Sim:</strong> {{ h.num_sim }}</div>
+            <div class="grid-cell"><strong>Número de línea:</strong> {{ h.num_linea }}</div>
+            <div class="grid-cell"><strong>Pin:</strong> {{ h.pin }}</div>
+            <div class="grid-cell"><strong>Puk:</strong> {{ h.puk }}</div>
+            <div class="grid-cell"><strong>Tipo de Sim:</strong> {{ h.tipo_sim }}</div>
+            <div class="grid-cell"><strong>Operador:</strong> {{ h.operador }}</div>
+            <div class="grid-cell"><strong>Plan:</strong> {{ h.plan }}</div>
+            <div class="grid-cell"><strong>Capacidad:</strong> {{ h.capacidad }}</div>
+            <div class="grid-cell"><strong>Estado:</strong> {{ h.estado }}</div>
+            <div class="grid-cell"><strong>IP:</strong> {{ h.ips || 'SIN IP' }}</div>
+            <div class="grid-cell"><strong>APN:</strong> {{ h.apns || 'SIN APN' }}</div>
+            <div class="grid-cell"><strong>Responsable:</strong> {{ h.responsable || 'N/A' }}</div>
+            <div class="grid-cell"><strong>Ubicación:</strong> {{ h.ubicacion || 'N/A' }}</div>
+            <div class="grid-cell"><strong>Destino:</strong> {{ h.destino || 'N/A' }}</div>
+          </div>
+
+          <div class="report-obs">
+            <div class="obs-box">
+              <strong>Observación del Ítem:</strong>
+              <p>{{ h.observacion_item || 'N/A' }}</p>
+            </div>
+            <div class="obs-box reason">
+              <strong>Observación del Cambio (Razón):</strong>
+              <p>{{ h.razon }}</p>
+            </div>
+          </div>
+          
+          <hr class="report-divider">
+        </div>
+
+      </div>
+
+      <ng-template #noHistory>
+        <div class="empty-state">
+          <p>No hay modificaciones registradas para esta SIM.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-close-modal" (click)="cerrarHistorial()">Finalizar Consulta</button>
+    </div>
+  </div>
 </div>

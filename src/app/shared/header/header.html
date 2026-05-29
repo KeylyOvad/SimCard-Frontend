@@ -9,16 +9,23 @@
   </div>
 
    <div class="top-right">
-      <div class="user-menu" (click)="toggleMenu()">
-      <span class="user-name">{{ userName }}</span>
-      <span class="arrow">▼</span>
+  <div class="user-menu" (click)="toggleMenu()">
 
-     <div *ngIf="menuOpen" class="dropdown" (click)="$event.stopPropagation()">
-        <div class="dropdown-item" (click)="logout()">
-           ⎋ Cerrar sesión
-       </div>
+    <div class="avatar">
+      {{ userName[0] }}
     </div>
+
+    <span class="user-name">{{ userName }}</span>
+    <span class="arrow">▾</span>
+
+    <div *ngIf="menuOpen" class="dropdown" (click)="$event.stopPropagation()">
+      <div class="dropdown-item" (click)="logout()">
+        Cerrar sesión
+      </div>
+    </div>
+
   </div>
- </div>
+</div>
+
 
 </header>

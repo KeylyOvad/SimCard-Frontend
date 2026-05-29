@@ -12,4 +12,12 @@ export class SimService {
   getSims() {
   return this.http.get<any[]>(this.apiUrl);
 }
+
+deleteSim(id: any): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  getSimById(id: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
 }

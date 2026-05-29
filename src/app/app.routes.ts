@@ -12,6 +12,7 @@ import { Destino } from './pages/parametros/destinos/destinos';
 import { Responsables } from './pages/parametros/responsables/responsables';
 import { Estado } from './pages/parametros/estados/estados';
 import { TipoSim } from './pages/parametros/simcard/simcard';
+import { SimForm } from './pages/sim-form/sim-form'
 
 
 export const routes: Routes = [
@@ -46,6 +47,17 @@ export const routes: Routes = [
 { path: 'parametros/ubicaciones', component: Ubicaciones},
 { path: 'parametros/destinos', component: Destino},
 { path: 'parametros/responsables', component: Responsables },
-{ path: 'parametros/estados', component: Estado }
+{ path: 'parametros/estados', component: Estado },
 
+{
+  path: 'sim-form',
+  component: SimForm,
+  canActivate: [AuthGuard]
+},
+
+{
+    path: 'sim-form/:id',
+    component: SimForm,
+    canActivate: [AuthGuard]
+  }
 ];

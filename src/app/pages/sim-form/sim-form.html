@@ -1,0 +1,151 @@
+<app-header></app-header>
+
+<div class="container" *ngIf="data$ | async as data">
+  <div class="form-card">
+    <div class="form-header">
+      <h2>{{ isEdit ? '📝 Modificar Sim Card' : '📱 Agregar Sim Card' }}</h2>
+    </div>
+
+    <form #form="ngForm" novalidate>
+      <h3>Detalles de Sim</h3>
+      <div class="grid-main">
+        <div class="field-group">
+          <label>Número de sim</label>
+          <input [(ngModel)]="sim.numeroSim" name="numeroSim" placeholder="Ingrese número">
+        </div>
+        <div class="field-group">
+          <label>Número de Línea</label>
+          <input [(ngModel)]="sim.numeroLinea" name="numeroLinea" placeholder="Ingrese línea">
+        </div>
+        <div class="field-group">
+          <label>PIN</label>
+          <input [(ngModel)]="sim.pin" name="pin" placeholder="####">
+        </div>
+        <div class="field-group">
+          <label>PUK</label>
+          <input [(ngModel)]="sim.puk" name="puk" placeholder="####">
+        </div>
+        
+        <div class="field-group">
+          <label>Tipo de Sim</label>
+          <select [(ngModel)]="sim.tipoSimId" name="tipoSimId">
+            <option value="">VACIO</option>
+            <option *ngFor="let t of data.tiposSim" [value]="t.id_tiposim">{{ t.descripcion }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Operador</label>
+          <select [(ngModel)]="sim.operadorId" name="operadorId">
+            <option value="">VACIO</option>
+            <option *ngFor="let o of data.operadores" [value]="o.id_operador">{{ o.descripcion }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Plan</label>
+          <select [(ngModel)]="sim.planId" name="planId">
+            <option value="">VACIO</option>
+            <option *ngFor="let p of data.planes" [value]="p.id_plan">{{ p.descripcion }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Capacidad</label>
+          <select [(ngModel)]="sim.capacidadId" name="capacidadId">
+            <option value="">VACIO</option>
+            <option *ngFor="let c of data.capacidades" [value]="c.id_capacidad">{{ c.descripcion }}</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Estado</label>
+          <select [(ngModel)]="sim.estadoId" name="estadoId">
+            <option value="">VACIO</option>
+            <option *ngFor="let e of data.estados" [value]="e.id_estado">{{ e.descripcion }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field-group">
+          <label>Dirección IP</label>
+          <div class="row-inline">
+            <input placeholder="xxx.xxx.xxx.xxx" [(ngModel)]="nuevaIp" name="ipTemp">
+            <button type="button" class="btn-add" (click)="agregarIp()">+</button>
+          </div>
+          <div class="list-tags">
+            <span *ngFor="let ip of sim.ip; let i = index" class="tag">{{ ip }} <i (click)="eliminarIp(i)">×</i></span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>APN</label>
+          <div class="row-inline">
+            <input [(ngModel)]="nuevoApn" name="apnTemp" placeholder="Nombre APN">
+            <button type="button" class="btn-add" (click)="agregarApn()">+</button>
+          </div>
+          <div class="list-tags">
+            <span *ngFor="let apn of sim.apn; let i = index" class="tag">{{ apn }} <i (click)="eliminarApn(i)">×</i></span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Ubicación y Responsable</h3>
+      <div class="grid-main">
+        <div class="field-group">
+          <label>Responsable</label>
+          <select [(ngModel)]="sim.responsableId" name="responsableId">
+            <option value="">VACIO</option>
+            <option *ngFor="let r of data.responsables" [value]="r.id_responsable">{{ r.descripcion }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Ubicación</label>
+          <select [(ngModel)]="sim.ubicacionId" name="ubicacionId">
+            <option value="">VACIO</option>
+            <option *ngFor="let u of data.ubicaciones" [value]="u.id_ubicacion">{{ u.descripcion }}</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Destino</label>
+          <select [(ngModel)]="sim.destinoId" name="destinoId">
+            <option value="">VACIO</option>
+            <option *ngFor="let d of data.destinos" [value]="d.id_destino">{{ d.descripcion }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="notes-section">
+        <div class="field-group">
+          <label>Observación Técnica</label>
+          <textarea [(ngModel)]="sim.observacion" name="observacion" rows="2" placeholder="Notas internas sobre la sim..."></textarea>
+        </div>
+
+        <div class="field-group" *ngIf="isEdit" style="margin-top: 15px;">
+          <label style="color: #555;">Motivo de la modificación</label>
+          <textarea 
+            [(ngModel)]="sim.razonModificacion" 
+            name="razonModificacion" 
+            rows="2" 
+            placeholder="¿Por qué se edita este registro? (Obligatorio)"
+            required>
+          </textarea>
+          <small [ngStyle]="{'color': (sim.razonModificacion?.length < 5) ? '#e53e3e' : '#38a169'}">
+            {{ sim.razonModificacion?.length || 0 }} / 5 caracteres mínimos
+          </small>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <button 
+          type="button" 
+          class="btn-guardar" 
+          (click)="guardar()"
+          [disabled]="isEdit && (!sim.razonModificacion || sim.razonModificacion.length < 5)">
+          {{ isEdit ? 'Actualizar Cambios' : 'Registrar Sim' }}
+        </button>
+        <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>

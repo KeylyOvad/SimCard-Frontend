@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; // Añadido para el historial
+import { HttpClient } from '@angular/common/http'; 
 
 import { SimService } from '../../services/sim.service';
 import { Sim } from '../../interceptors/models/sim.model';
@@ -31,7 +31,6 @@ export class Home implements OnInit {
     operators: 0,
   };
 
-  // --- NUEVAS VARIABLES PARA EL HISTORIAL ---
   historialSim: any[] = [];
   mostrarModalHistorial: boolean = false;
   simSeleccionadaNumero: string = '';
@@ -40,7 +39,7 @@ export class Home implements OnInit {
     private router: Router,
     private simService: SimService,
     private cd: ChangeDetectorRef,
-    private http: HttpClient // Inyectado
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -113,10 +112,8 @@ export class Home implements OnInit {
 }
 
   addSim() {
-    this.router.navigate(['/sim-form']); // Redirigir al formulario vacío
+    this.router.navigate(['/sim-form']);
   }
-
-  // --- NUEVAS FUNCIONES PARA EL HISTORIAL ---
   verHistorial(sim: any) {
     const id = sim.id_sim;
     this.simSeleccionadaNumero = sim.num_sim;

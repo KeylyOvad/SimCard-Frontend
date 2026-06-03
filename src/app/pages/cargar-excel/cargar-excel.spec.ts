@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Destino } from './destinos';
+import { CargarExcelComponent } from './cargar-excel';
 
-describe('Destinos', () => {
-  let component: Destino;
-  let fixture: ComponentFixture<Destino>;
+describe('CargarExcel', () => {
+  let component: CargarExcelComponent;
+  let fixture: ComponentFixture<CargarExcelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Destino],
+      imports: [CargarExcelComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Destino);
+    fixture = TestBed.createComponent(CargarExcelComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

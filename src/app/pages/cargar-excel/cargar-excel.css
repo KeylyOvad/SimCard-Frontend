@@ -1,0 +1,156 @@
+.contenedor-principal {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #FAFAFA;
+    position: relative;
+    padding-bottom: 60px;
+    box-sizing: border-box;
+}
+
+.banner-cens {
+    background-color: #00A859;
+    color: #FFFFFF;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.titulo-banner {
+    margin: 0;
+    font-size: 32px;
+}
+
+.logo-container {
+    background-color: #FFFFFF;
+    color: #00A859;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+.logo-texto .subtext {
+    font-size: 10px;
+    color: #666;
+    display: block;
+}
+
+.contenido-carga {
+    max-width: 800px;
+    margin: 50px auto;
+    background: #FFFFFF;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.formulario-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-cargar-excel {
+    background-color: #43A047;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s ease;
+}
+
+.btn-cargar-excel:hover {
+    background-color: #388E3C;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.18);
+}
+
+.btn-cargar-excel:disabled {
+    background-color: #A5D6A7 !important;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.procesamiento-visible {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.alerta-advertencia {
+    background-color: #FFF3CD;
+    border: 1px solid #FFEEBA;
+    color: #856404;
+    padding: 14px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+}
+
+.lista-pasos {
+    list-style: none;
+    padding: 0;
+    line-height: 2.2;
+}
+
+.progreso-wrapper {
+    width: 100%;
+    background-color: #EDF2F7;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.barra-progreso-fill {
+    background-color: #00A859;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.consola-terminal {
+    background-color: #1A202C;
+    border-radius: 6px;
+    height: 160px;
+    overflow-y: auto;
+    padding: 15px;
+    font-family: monospace;
+    color: #E2E8F0;
+}
+
+.footer-cens {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    color: #718096;
+    font-size: 13px;
+}
+
+.banner-izquierda {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn-regresar {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-regresar:hover {
+    background-color: #FFFFFF;
+    color: #00A859; 
+    border-color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}

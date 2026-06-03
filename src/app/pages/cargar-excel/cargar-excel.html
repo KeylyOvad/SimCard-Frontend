@@ -1,0 +1,42 @@
+<div class="contenedor-principal">
+  <header class="banner-cens">
+    <div class="banner-izquierda">
+      <button class="btn-regresar" routerLink="/home" title="Volver al Inicio">
+        ⬅ Volver
+      </button>
+      <h1 class="titulo-banner">Subida de Archivo</h1>
+    </div>
+    </header>
+
+  <main class="contenido-carga">
+    <div class="formulario-flex">
+      <div class="file-input-wrapper">
+        <input type="file" id="archivoExcel" (change)="onFileSelected($event)" accept=".xlsx, .xls" />
+      </div>
+      <button class="btn-cargar-excel" [disabled]="estaCargando" (click)="onUpload()">
+        {{ estaCargando ? 'Procesando...' : 'Cargar Excel' }}
+      </button>
+    </div>
+
+    <div *ngIf="mostrarConsola" class="procesamiento-visible">
+      <div class="alerta-advertencia">
+        <strong>⚠️ Advertencia:</strong> Detectados formatos científicos en columnas numéricas (ej. N° SIM). El sistema aplicará corrección automática.
+      </div>
+
+      <ul class="lista-pasos">
+        <li>📄 Leyendo archivo Excel... <span [style.color]="colorPaso1">[{{ estadoPaso1 }}]</span></li>
+        <li>🔍 Validando registros... <span [style.color]="colorPaso2">[{{ estadoPaso2 }}]</span></li>
+        <li>🗄️ Insertando en base de datos... <span [style.color]="colorPaso3">[{{ estadoPaso3 }}]</span></li>
+      </ul>
+
+      <div class="progreso-wrapper">
+        <div class="barra-progreso-fill" [style.width.%]="progreso"></div>
+      </div>
+
+      <div class="consola-terminal">
+        <div *ngFor="let log of logs">{{ log }}</div>
+      </div>
+    </div>
+  </main>
+
+  </div>

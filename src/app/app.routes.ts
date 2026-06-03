@@ -13,6 +13,7 @@ import { Responsables } from './pages/parametros/responsables/responsables';
 import { Estado } from './pages/parametros/estados/estados';
 import { TipoSim } from './pages/parametros/simcard/simcard';
 import { SimForm } from './pages/sim-form/sim-form'
+import { CargarExcelComponent } from './pages/cargar-excel/cargar-excel';
 
 
 export const routes: Routes = [
@@ -58,6 +59,12 @@ export const routes: Routes = [
 {
     path: 'sim-form/:id',
     component: SimForm,
+    canActivate: [AuthGuard]
+  },
+
+ {
+    path: 'cargar-excel',
+    component: CargarExcelComponent,
     canActivate: [AuthGuard]
   }
 ];

@@ -1,42 +1,120 @@
-<div class="contenedor-principal">
-  <header class="banner-cens">
-    <div class="banner-izquierda">
-      <button class="btn-regresar" routerLink="/home" title="Volver al Inicio">
-        ⬅ Volver
+<app-header></app-header>
+
+<div class="page-container">
+  <!-- Encabezado de la vista con Clases Globales -->
+  <header class="page-header">
+    <h1>Carga Masiva de SIMs</h1>
+    <p>Importa múltiples registros al sistema a través de un archivo de Excel (.xlsx, .xls, .xlsm)</p>
+  </header>
+
+  <!-- Tarjeta Principal de Carga -->
+  <div class="upload-card">
+    <h3>Seleccionar archivo Excel</h3>
+
+    <!-- Zona Drag & Drop -->
+    <div 
+      class="dropzone-area" 
+      [class.has-file]="nombreArchivo"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <i class="pi pi-file-excel dropzone-icon"></i>
+      <label class="dropzone-label">
+        <span class="browse-text">Selecciona un archivo</span> o arrástralo aquí
+        <input
+          #excelFileInput
+          type="file"
+          accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12"
+          (change)="onFileSelected($event)"
+          hidden
+        />
+      </label>
+      <p class="file-type-hint">Formatos soportados: .xlsx, .xls, .xlsm</p>
+    </div>
+
+    <!-- Badge con Archivo Seleccionado -->
+    <div class="selected-file-badge" *ngIf="nombreArchivo">
+      <span class="file-info">
+        <i class="pi pi-file"></i> {{ nombreArchivo }}
+      </span>
+      <button 
+        type="button" 
+        class="btn-clear-file" 
+        (click)="limpiarArchivo(excelFileInput)" 
+        title="Quitar archivo"
+      >
+        <i class="pi pi-times"></i>
       </button>
-      <h1 class="titulo-banner">Subida de Archivo</h1>
-    </div>
-    </header>
-
-  <main class="contenido-carga">
-    <div class="formulario-flex">
-      <div class="file-input-wrapper">
-        <input type="file" id="archivoExcel" (change)="onFileSelected($event)" accept=".xlsx, .xls" />
-      </div>
-      <button class="btn-cargar-excel" [disabled]="estaCargando" (click)="onUpload()">
-        {{ estaCargando ? 'Procesando...' : 'Cargar Excel' }}
-      </button>
     </div>
 
-    <div *ngIf="mostrarConsola" class="procesamiento-visible">
-      <div class="alerta-advertencia">
-        <strong>⚠️ Advertencia:</strong> Detectados formatos científicos en columnas numéricas (ej. N° SIM). El sistema aplicará corrección automática.
-      </div>
-
-      <ul class="lista-pasos">
-        <li>📄 Leyendo archivo Excel... <span [style.color]="colorPaso1">[{{ estadoPaso1 }}]</span></li>
-        <li>🔍 Validando registros... <span [style.color]="colorPaso2">[{{ estadoPaso2 }}]</span></li>
-        <li>🗄️ Insertando en base de datos... <span [style.color]="colorPaso3">[{{ estadoPaso3 }}]</span></li>
-      </ul>
-
-      <div class="progreso-wrapper">
-        <div class="barra-progreso-fill" [style.width.%]="progreso"></div>
-      </div>
-
-      <div class="consola-terminal">
-        <div *ngFor="let log of logs">{{ log }}</div>
-      </div>
-    </div>
-  </main>
-
+    <!-- Botón para Iniciar Importación -->
+    <p-button
+      [label]="cargando ? 'Procesando registros...' : 'Importar Excel'"
+      [icon]="cargando ? 'pi pi-spin pi-spinner' : 'pi pi-upload'"
+      styleClass="btn-primary-cens w-full p-3 mt-4"
+      [disabled]="cargando || !nombreArchivo"
+      (click)="subirExcel()"
+    ></p-button>
   </div>
+
+  <!-- Contenedor de Carga (Spinner) -->
+  <div *ngIf="cargando" class="loading-container">
+    <p-progressSpinner 
+      styleClass="w-3rem h-3rem" 
+      strokeWidth="4" 
+      animationDuration=".8s"
+    ></p-progressSpinner>
+    <p class="mt-3">Procesando el documento y validando consistencia de datos, por favor espera...</p>
+  </div>
+
+  <!-- Resumen de Resultados -->
+  <div *ngIf="resultado && !resultado.error" class="result-alert-box">
+    <h3 class="result-box-title">📊 Resultado de Importación</h3>
+    
+    <div class="result-metrics-inline">
+      <span class="metric-pill text-success">
+        <i class="pi pi-check-circle"></i> 
+        <strong>{{ resultado.guardadas }}</strong> Guardadas
+      </span>
+      <span class="metric-pill text-warning">
+        <i class="pi pi-exclamation-triangle"></i> 
+        <strong>{{ resultado.omitidas }}</strong> Con observaciones
+      </span>
+    </div>
+  </div>
+
+  <!-- Alerta de Error -->
+  <p-message 
+    *ngIf="resultado?.error" 
+    severity="error" 
+    styleClass="w-full mt-4"
+  >
+    <ng-template pTemplate="content">
+      <span>{{ resultado?.mensaje }}</span>
+    </ng-template>
+  </p-message>
+
+  <!-- Tabla de Errores Encontrados -->
+  <div *ngIf="errores && errores.length > 0" class="error-table-container mt-4">
+    <h2 class="section-table-title">Errores o Inconsistencias Encontradas</h2>
+
+    <p-table 
+      [value]="errores" 
+      styleClass="p-datatable-striped p-datatable-gridlines cens-card-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th class="col-id">Fila</th>
+          <th class="col-descripcion">Descripción del Error</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-e>
+        <tr>
+          <td class="col-id"><strong>#{{ e.fila }}</strong></td>
+          <td class="col-descripcion cell-error-text">{{ e.error }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

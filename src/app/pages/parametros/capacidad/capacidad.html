@@ -1,50 +1,128 @@
 <app-header></app-header>
-  <div class="capacidad-container">
-  <header class="header">
-  <h1>Gestión de Capacidades</h1>
-  <p>Administración de capacidades de SIM</p>
+
+<div class="page-container">
+  <header class="page-header">
+    <h1>Gestión de Capacidades</h1>
+    <p>Administración de capacidades de SIM Cards</p>
   </header>
- <div class="capacidad-actions">
- <input class="search" type="text" placeholder="Buscar capacidad..."
-    [(ngModel)]="searchText" />
-    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Capacidad</button>
-</div>
-    <table>
-      <thead>
- <tr>
-      <th>ID</th>
-      <th>Descripción</th>
-      <th>Acción</th>
-      </tr>
-  </thead>
-     <tbody>
-       <tr *ngFor="let cap of capacidades | filter:searchText:['descripcion']; let i = index">
-       <td>{{ i + 1 }}</td>
-       <td>{{ cap.descripcion }}</td>
-        <td class="actions">
-            <button class="edit" (click)="editarCapacidad(cap)">✏️</button>
-            <button class="delete" (click)="eliminarCapacidad(cap.id_capacidad)">🗑️</button>
-       </td>
-   </tr>
- </tbody>
-     </table>
-</div>
-<div class="modal-overlay" *ngIf="modalAbierto">
-    <div class="modal">
-    <div class="modal-header">
-    <span class="icon">📦</span>
-      <h2>{{ capacidadEditando ? 'Editar Capacidad' : 'Nueva Capacidad' }}</h2>
-  </div>
-       <form class="modal-body">
-       <div class="form-group full">
-       <input type="text" placeholder="Descripción"
-            [(ngModel)]="nuevaCapacidad.descripcion" name="descripcion" />
+
+  <p-table
+    #dt
+    [value]="capacidades"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['descripcion']"
+    [showGridlines]="true"
+    styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
+  >
+    <!-- Buscador + Botón -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar por descripción..."
+            class="w-full"
+          />
+        </p-iconfield>
+
+        <p-button
+          *ngIf="puedeModificar"
+          label="Agregar Capacidad"
+          icon="pi pi-plus"
+          styleClass="btn-primary-cens"
+          (onClick)="abrirModal()"
+        ></p-button>
       </div>
-       </form>
-       <div class="modal-footer">
-       <button type="button" class="btn-guardar" (click)="guardarCapacidad()">Guardar</button>
-        <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-    
-    </div>
- </div>
+    </ng-template>
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 15%;" class="text-center">ID</th>
+        <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
+          Descripción <p-sortIcon field="descripcion" />
+        </th>
+        <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-capacidad>
+      <tr>
+        <td class="text-center">{{ capacidad.id_capacidad }}</td>
+        <td class="text-left"><strong>{{ capacidad.descripcion }}</strong></td>
+        
+        <td *ngIf="puedeModificar" class="text-center">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action edit"
+              title="Editar"
+              (click)="editarCapacidad(capacidad)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-action delete"
+              title="Eliminar"
+              (click)="eliminarCapacidad(capacidad)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="puedeModificar ? 3 : 2" class="text-center p-4">
+          No se encontraron capacidades registradas.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Modal Dialog -->
+<p-dialog
+  [(visible)]="modalAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="modal-custom-cens"
+  (onHide)="cerrarModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-header-custom">
+      <span class="icon">📦</span>
+      <h3>{{ capacidadEditando ? 'Editar Capacidad' : 'Nueva Capacidad' }}</h3>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form" (ngSubmit)="guardarCapacidad()">
+    <div class="field">
+      <label for="descripcionCapacidad">Descripción *</label>
+      <input 
+        id="descripcionCapacidad"
+        pInputText 
+        type="text" 
+        [(ngModel)]="nuevaCapacidad.descripcion" 
+        name="descripcion" 
+        placeholder="Ej: 128 KB, 500 MB..."
+        class="w-full"
+        required
+      />
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="submit" class="btn-guardar-custom">Guardar</button>
+      <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </form>
+</p-dialog>

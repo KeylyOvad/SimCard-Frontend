@@ -1,0 +1,27 @@
+<div class="carrusel-wrapper">
+  <p-carousel 
+    [value]="carouselImages" 
+    [numVisible]="1" 
+    [numScroll]="1" 
+    [circular]="true" 
+    [autoplayInterval]="5000">
+
+    <ng-template let-item pTemplate="item">
+      <div class="hero-slide">
+      
+        <img [src]="item.url" [alt]="item.title" class="slide-bg-blur" />
+
+        
+        <img [src]="item.url" [alt]="item.title" class="slide-bg" />
+
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <span class="eyebrow">{{ item.eyebrow }}</span>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.desc }}</p>
+        </div>
+      </div>
+    </ng-template>
+
+  </p-carousel>
+</div>

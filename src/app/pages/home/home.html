@@ -1,135 +1,190 @@
 <app-header></app-header>
 
-<div class="home-container">
-  <header class="header">
+<div class="page-container">
+  <!-- Encabezado de sección -->
+  <header class="page-header">
     <h1>Sim Cards CENS</h1>
     <p>Gestión de tarjetas SIM</p>
   </header>
 
+  <!-- Carrusel Informativo -->
+  <app-carrusel></app-carrusel>
+
+  <!-- Sección Tarjetas de Estadísticas -->
   <section class="stats">
     <div class="stat-card">
-      <h2>{{ stats.total }}</h2>
-      <span>Total registros</span>
+      <div class="card-icon-wrapper">
+        <i class="pi pi-mobile"></i>
+      </div>
+      <div class="card-content">
+        <h2>{{ stats.total }}</h2>
+        <span>Total Registros</span>
+      </div>
     </div>
+
     <div class="stat-card">
-      <h2>{{ stats.operators }}</h2>
-      <span>Operadores</span>
+      <div class="card-icon-wrapper">
+        <i class="pi pi-phone"></i>
+      </div>
+      <div class="card-content">
+        <h2>{{ stats.claro }}</h2>
+        <span>SIMCARD CLARO</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="card-icon-wrapper">
+        <i class="pi pi-wifi"></i>
+      </div>
+      <div class="card-content">
+        <h2>{{ stats.movistar }}</h2>
+        <span>SIMCARD MOVISTAR</span>
+      </div>
     </div>
   </section>
 
- <div class="actions-bar">
-    <button class="btn primary" routerLink="/cargar-excel">Cargar Excel</button>
-    <button class="btn warning" (click)="generateReport()">Reporte General</button>
-    <button class="btn success" routerLink="/sim-form"> + Agregar SIM </button>
-  </div>
+  <!-- Tabla Principal de SIMs PrimeNG -->
+  <p-table
+    #dt
+    [value]="simCards"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25, 50]"
+    [globalFilterFields]="['num_linea', 'operador', 'num_sim', 'plan', 'capacidad', 'responsable', 'destino', 'estado']"
+    [showGridlines]="true"
+    styleClass="p-datatable-striped cens-card-table"
+  >
+    <!-- Caption con Buscador y Acciones -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <!-- Buscador Global -->
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search"></p-inputicon>
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar SIM..."
+            class="w-full"
+          />
+        </p-iconfield>
 
-  <input class="search" type="text" placeholder="Buscar SIM..." [(ngModel)]="searchText" />
+        <!-- Grupo de Botones de Acción -->
+        <div class="actions-right-group">
+          <p-button
+            *ngIf="puedeModificar"
+            label="Cargar Excel"
+            icon="pi pi-file-excel"
+            styleClass="p-button-info"
+            routerLink="/cargar-excel"
+          ></p-button>
 
-  <table>
-    <thead>
+          <p-button
+            label="Reporte General"
+            icon="pi pi-download"
+            styleClass="p-button-warning"
+            (click)="generateReport()"
+          ></p-button>
+
+          <p-button
+            *ngIf="puedeModificar"
+            label="Agregar SIM"
+            icon="pi pi-plus"
+            styleClass="btn-primary-cens"
+            routerLink="/sim-form"
+          ></p-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados de Columna -->
+    <ng-template pTemplate="header">
       <tr>
-        <th>Nº Línea</th>
-        <th>Operador</th>
-        <th>Serial Sim Card</th>
-        <th>Plan</th>
-        <th>Capacidad</th>
-        <th>Responsable</th>
-        <th>Destino</th>
-        <th>Estado</th>
-        <th>Acción</th>
+        <th pSortableColumn="num_linea">Nº Línea <p-sortIcon field="num_linea"></p-sortIcon></th>
+        <th pSortableColumn="operador">Operador <p-sortIcon field="operador"></p-sortIcon></th>
+        <th pSortableColumn="num_sim">Serial Sim Card <p-sortIcon field="num_sim"></p-sortIcon></th>
+        <th pSortableColumn="plan">Plan <p-sortIcon field="plan"></p-sortIcon></th>
+        <th pSortableColumn="capacidad">Capacidad <p-sortIcon field="capacidad"></p-sortIcon></th>
+        <th pSortableColumn="responsable">Responsable <p-sortIcon field="responsable"></p-sortIcon></th>
+        <th pSortableColumn="destino">Destino <p-sortIcon field="destino"></p-sortIcon></th>
+        <th pSortableColumn="estado" class="text-center">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+        <th class="col-acciones">Acciones</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let sim of paginatedSims">
-        <td>{{ sim.num_linea }}</td>
+    </ng-template>
+
+    <!-- Filas de Datos -->
+    <ng-template pTemplate="body" let-sim>
+      <tr>
+        <td><strong>{{ sim.num_linea }}</strong></td>
         <td>{{ sim.operador }}</td>
         <td>{{ sim.num_sim }}</td>
         <td>{{ sim.plan }}</td>
         <td>{{ sim.capacidad }}</td>
         <td>{{ sim.responsable }}</td>
         <td>{{ sim.destino }}</td>
-        <td [class.sim-active]="sim.estado === 'Activa'" [class.sim-inactive]="sim.estado === 'Desactivada'">
-          {{ sim.estado }}
+
+        <!-- Estado con Badge/Tag uniforme -->
+        <td class="text-center">
+          <span
+            class="status-badge"
+            [class.sim-active]="sim.estado === 'Activa'"
+            [class.sim-inactive]="sim.estado === 'Desactivada'"
+          >
+            {{ sim.estado }}
+          </span>
         </td>
-        <td class="actions">
-          <button class="history" (click)="verHistorial(sim)" title="Ver Historial">📋</button>
-          <button class="edit" (click)="editSim(sim)">✏️</button>
-          <button class="delete" (click)="deleteSim(sim)">🗑️</button>
+
+        <!-- Acciones -->
+        <td class="col-acciones">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action history"
+              title="Ver Historial"
+              (click)="verHistorial(sim)"
+            >
+              <i class="pi pi-history"></i>
+            </button>
+
+            <button
+              *ngIf="puedeModificar"
+              type="button"
+              class="btn-action edit"
+              title="Editar SIM"
+              (click)="editSim(sim)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+
+            <button
+              *ngIf="puedeModificar"
+              type="button"
+              class="btn-action delete"
+              title="Eliminar SIM"
+              (click)="deleteSim(sim)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
         </td>
       </tr>
-    </tbody>
-  </table>
+    </ng-template>
 
-  <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage === 1">Anterior</button>
-    <span>Página {{ currentPage }}</span>
-    <button (click)="nextPage()">Siguiente</button>
-  </div>
+    <!-- Estado vacío -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="9" class="p-4 text-center">
+          No se encontraron registros de SIM Cards.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 
-<div class="modal-overlay" *ngIf="mostrarModalHistorial">
-  <div class="modal-card detailed">
-    <div class="modal-header">
-      <h3>📜 Historial de Cambios: {{ simSeleccionadaNumero }}</h3>
-      <button class="close-x" (click)="cerrarHistorial()">&times;</button>
-    </div>
-    
-    <div class="modal-body">
-      <div class="history-list" *ngIf="historialSim && historialSim.length > 0; else noHistory">
-        
-        <div class="history-item-report" *ngFor="let h of historialSim">
-          
-          <div class="report-header">
-            <span class="report-date">MODIFICACIÓN DEL: 
-              <span class="val">{{ h.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</span>
-            </span>
-            <span class="report-user">MODIFICADO POR: 
-              <span class="val">{{ h.nombres }} {{ h.apellidos }}</span>
-            </span>
-          </div>
-
-          <div class="report-grid">
-            <div class="grid-cell"><strong>Número de Sim:</strong> {{ h.num_sim }}</div>
-            <div class="grid-cell"><strong>Número de línea:</strong> {{ h.num_linea }}</div>
-            <div class="grid-cell"><strong>Pin:</strong> {{ h.pin }}</div>
-            <div class="grid-cell"><strong>Puk:</strong> {{ h.puk }}</div>
-            <div class="grid-cell"><strong>Tipo de Sim:</strong> {{ h.tipo_sim }}</div>
-            <div class="grid-cell"><strong>Operador:</strong> {{ h.operador }}</div>
-            <div class="grid-cell"><strong>Plan:</strong> {{ h.plan }}</div>
-            <div class="grid-cell"><strong>Capacidad:</strong> {{ h.capacidad }}</div>
-            <div class="grid-cell"><strong>Estado:</strong> {{ h.estado }}</div>
-            <div class="grid-cell"><strong>IP:</strong> {{ h.ips || 'SIN IP' }}</div>
-            <div class="grid-cell"><strong>APN:</strong> {{ h.apns || 'SIN APN' }}</div>
-            <div class="grid-cell"><strong>Responsable:</strong> {{ h.responsable || 'N/A' }}</div>
-            <div class="grid-cell"><strong>Ubicación:</strong> {{ h.ubicacion || 'N/A' }}</div>
-            <div class="grid-cell"><strong>Destino:</strong> {{ h.destino || 'N/A' }}</div>
-          </div>
-
-          <div class="report-obs">
-            <div class="obs-box">
-              <strong>Observación del Ítem:</strong>
-              <p>{{ h.observacion_item || 'N/A' }}</p>
-            </div>
-            <div class="obs-box reason">
-              <strong>Observación del Cambio (Razón):</strong>
-              <p>{{ h.razon }}</p>
-            </div>
-          </div>
-          
-          <hr class="report-divider">
-        </div>
-
-      </div>
-
-      <ng-template #noHistory>
-        <div class="empty-state">
-          <p>No hay modificaciones registradas para esta SIM.</p>
-        </div>
-      </ng-template>
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn-close-modal" (click)="cerrarHistorial()">Finalizar Consulta</button>
-    </div>
-  </div>
-</div>
+<!-- Modal Component Historial -->
+<app-historial
+  [visible]="mostrarModalHistorial"
+  [historial]="historialSim"
+  [numeroSim]="simSeleccionadaNumero"
+  (cerrar)="cerrarHistorial()"
+></app-historial>

@@ -1,156 +1,142 @@
-.contenedor-principal {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #FAFAFA;
-    position: relative;
-    padding-bottom: 60px;
-    box-sizing: border-box;
+/* --- TARJETA DE CARGA Y DROPZONE --- */
+.upload-card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 24px;
 }
 
-.banner-cens {
-    background-color: #00A859;
-    color: #FFFFFF;
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.upload-card h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
 }
 
-.titulo-banner {
-    margin: 0;
-    font-size: 32px;
+.dropzone-area {
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 36px 20px;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.logo-container {
-    background-color: #FFFFFF;
-    color: #00A859;
-    padding: 8px 16px;
-    border-radius: 6px;
+.dropzone-area:hover, 
+.dropzone-area.has-file {
+  border-color: var(--cens-success, #10b981);
+  background: #f0fdf4;
 }
 
-.logo-texto .subtext {
-    font-size: 10px;
-    color: #666;
-    display: block;
+.dropzone-icon {
+  font-size: 42px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+  display: block;
 }
 
-.contenido-carga {
-    max-width: 800px;
-    margin: 50px auto;
-    background: #FFFFFF;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+.dropzone-area:hover .dropzone-icon, 
+.dropzone-area.has-file .dropzone-icon {
+  color: var(--cens-success, #10b981);
 }
 
-.formulario-flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
+.dropzone-label {
+  font-size: 14px;
+  color: #475569;
+  cursor: pointer;
 }
 
-.btn-cargar-excel {
-    background-color: #43A047;
-    color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 12px 32px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.12);
-    transition: all 0.2s ease;
+.browse-text {
+  color: var(--cens-primary, #005e2b);
+  font-weight: 600;
+  text-decoration: underline;
 }
 
-.btn-cargar-excel:hover {
-    background-color: #388E3C;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.18);
+.file-type-hint {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #94a3b8;
 }
 
-.btn-cargar-excel:disabled {
-    background-color: #A5D6A7 !important;
-    cursor: not-allowed;
-    transform: none;
+/* --- BADGE DE ARCHIVO SELECCIONADO --- */
+.selected-file-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #065f46;
+  font-weight: 600;
 }
 
-.procesamiento-visible {
-    margin-top: 40px;
-    text-align: left;
+.btn-clear-file {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #065f46;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.alerta-advertencia {
-    background-color: #FFF3CD;
-    border: 1px solid #FFEEBA;
-    color: #856404;
-    padding: 14px;
-    border-radius: 6px;
-    margin-bottom: 25px;
+/* --- ESTADO DE CARGA & RESULTADOS --- */
+.loading-container {
+  margin-top: 24px;
+  text-align: center;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 
-.lista-pasos {
-    list-style: none;
-    padding: 0;
-    line-height: 2.2;
+.result-alert-box {
+  background-color: #eaf7ee; 
+  border-left: 5px solid var(--cens-success, #10b981); 
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-top: 24px;
 }
 
-.progreso-wrapper {
-    width: 100%;
-    background-color: #EDF2F7;
-    height: 12px;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 25px;
+.result-box-title {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cens-primary-dark, #004d23);
 }
 
-.barra-progreso-fill {
-    background-color: #00A859;
-    height: 100%;
-    transition: width 0.3s ease;
+.result-metrics-inline {
+  display: flex;
+  gap: 24px;
+  align-items: center;
 }
 
-.consola-terminal {
-    background-color: #1A202C;
-    border-radius: 6px;
-    height: 160px;
-    overflow-y: auto;
-    padding: 15px;
-    font-family: monospace;
-    color: #E2E8F0;
+.metric-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.footer-cens {
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-    color: #718096;
-    font-size: 13px;
+.metric-pill.text-success { color: #16a34a; }
+.metric-pill.text-warning { color: #d97706; }
+
+.section-table-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 28px 0 14px 0;
 }
 
-.banner-izquierda {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.btn-regresar {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-regresar:hover {
-    background-color: #FFFFFF;
-    color: #00A859; 
-    border-color: #FFFFFF;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+.cell-error-text {
+  color: #374151;
+  font-size: 13.5px;
 }

@@ -1,50 +1,132 @@
 <app-header></app-header>
-<div class="responsable-container">
-  <header class="header">
+
+<div class="page-container">
+  <!-- Título principal -->
+  <header class="page-header">
     <h1>Gestión de Responsables</h1>
     <p>Administración de responsables</p>
   </header>
-  <div class="responsable-actions">
-    <input class="search" type="text" placeholder="Buscar responsable..."
-           [(ngModel)]="searchText" />
-    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Responsable</button>
-  </div>
-  <table>
-    <thead>
+
+  <!-- Tabla de responsables PrimeNG -->
+  <p-table
+    #dt
+    [value]="responsables"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['descripcion']"
+    [showGridlines]="true"
+    styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
+  >
+    <!-- Buscador y botón Agregar -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar responsable..."
+            class="w-full"
+          />
+        </p-iconfield>
+
+        <p-button
+          *ngIf="puedeModificar"
+          label="Agregar Responsable"
+          icon="pi pi-plus"
+          styleClass="btn-primary-cens"
+          (onClick)="abrirModal()"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados alineados al estándar del proyecto -->
+    <ng-template pTemplate="header">
       <tr>
-        <th>ID</th>
-        <th>Descripción</th>
-        <th>Acción</th>
+        <th style="width: 15%;" class="text-center">ID</th>
+        <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
+          Descripción <p-sortIcon field="descripcion" />
+        </th>
+        <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let resp of responsables | filter:searchText:['descripcion']; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ resp.descripcion }}</td>
-        <td class="actions">
-          <button class="edit" (click)="editarResponsable(resp)">✏️</button>
-          <button class="delete" (click)="eliminarResponsable(resp.id_responsable)">🗑️</button>
+    </ng-template>
+
+    <!-- Filas -->
+    <ng-template pTemplate="body" let-resp let-rowIndex="rowIndex">
+      <tr>
+        <td class="text-center">{{ resp.id_responsable || (rowIndex + 1) }}</td>
+        <td class="text-left"><strong>{{ resp.descripcion }}</strong></td>
+        
+        <td *ngIf="puedeModificar" class="text-center">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action edit"
+              title="Editar"
+              (click)="editarResponsable(resp)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-action delete"
+              title="Eliminar"
+              (click)="eliminarResponsable(resp)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
         </td>
       </tr>
-    </tbody>
-  </table>
-</div>
-<div class="modal-overlay" *ngIf="modalAbierto">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="icon">👤</span>
-      <h2>{{ responsableEditando ? 'Editar Responsable' : 'Nuevo Responsable' }}</h2>
-    </div>
-    <form class="modal-body">
-      <div class="form-group full">
-        <input type="text" placeholder="Descripción"
-               [(ngModel)]="nuevoResponsable.descripcion" name="descripcion" />
-      </div>
-    </form>
-    <div class="modal-footer">
-      <button type="button" class="btn-guardar" (click)="guardarResponsable()">Guardar</button>
-      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-    </div>
-  </div>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="puedeModificar ? 3 : 2" class="p-4 text-center">
+          No se encontraron responsables registrados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 
+<!-- Modal Dialog PrimeNG -->
+<p-dialog
+  [(visible)]="modalAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="modal-custom-cens"
+  (onHide)="cerrarModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-header-custom">
+      <span class="icon">👤</span>
+      <h3>{{ responsableEditando ? 'Editar Responsable' : 'Nuevo Responsable' }}</h3>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form" (ngSubmit)="guardarResponsable()">
+    <div class="field">
+      <label for="descripcionResponsable">Descripción *</label>
+      <input 
+        id="descripcionResponsable"
+        pInputText 
+        type="text" 
+        [(ngModel)]="nuevoResponsable.descripcion" 
+        name="descripcion" 
+        placeholder="Ej: Juan Pérez, Área Mantenimiento..."
+        class="w-full" 
+        required
+      />
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="submit" class="btn-guardar-custom">Guardar</button>
+      <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </form>
+</p-dialog>

@@ -1,15 +1,36 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../shared/header/header';
+import { AuthService } from '../../services/auth.service';
+
+// Módulos PrimeNG v21
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { TagModule } from 'primeng/tag';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Header],
+  imports: [
+    CommonModule,
+    FormsModule,
+    Header,
+    TableModule,
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule,
+    TagModule,
+    SelectModule
+  ],
   templateUrl: './usuarios.html',
   styleUrls: ['./usuarios.css']
 })
@@ -18,117 +39,154 @@ export class UsuariosComponent implements OnInit {
   modalAbierto = false;
   usuarios: any[] = [];
   usuarioEditando: any = null;
-   nuevoUsuario = {
-     nombres: '',
-     apellidos: '',
-     correo: '',
-     contrasena: '',
-     confirmar: '',
-     estado: 'Activo'
- };
- constructor(
-    private router: Router,
+  puedeModificar = false;
+
+  // Opciones para p-select (Estado y Rol)
+  opcionesEstado = [
+    { label: 'Activo', value: 'Activo' },
+    { label: 'Inactivo', value: 'Inactivo' }
+  ];
+
+  opcionesRol = [
+    { label: 'Administrador', value: 1 },
+    { label: 'Usuario', value: 2 }
+  ];
+
+  nuevoUsuario = {
+    nombres: '',
+    apellidos: '',
+    correo: '',
+    contrasena: '',
+    confirmar: '',
+    estado: 'Activo',
+    id_rol: 1
+  };
+
+  constructor(
     private http: HttpClient,
+    private authService: AuthService,
     private cd: ChangeDetectorRef
- ) {}
+  ) {}
 
-   ngOnInit() {
-     this.cargarUsuarios();
- }
+  ngOnInit() {
+    this.puedeModificar = this.authService.esAdmin();
+    this.cargarUsuarios();
+  }
 
-cargarUsuarios() {
-    this.http.get<any[]>('http://localhost:3000/api/usuarios')
-       .subscribe({
-       next: (data) => {
-          this.usuarios = data.map(u => ({
-              ...u,
-              nombre: u.nombres + ' ' + u.apellidos,
-              estado: Number(u.estado) === 1 ? 'Activo' : 'Inactivo'
-         }));
-            this.cd.detectChanges();
-       },
-          error: (err) => {
-         console.error(err);
-        }
-     });
-}
+  cargarUsuarios() {
+    this.http.get<any[]>('http://localhost:3000/api/usuarios').subscribe({
+      next: (data) => {
+        this.usuarios = data.map((u) => {
+          const estadoFormateado = (u.estado === 1 || u.estado === '1' || u.estado === 'Activo') 
+            ? 'Activo' 
+            : 'Inactivo';
+
+          return {
+            ...u,
+            nombreCompleto: `${u.nombres} ${u.apellidos}`,
+            estado: estadoFormateado,
+            rolTexto: Number(u.id_rol) === 1 ? 'Administrador' : 'Usuario'
+          };
+        });
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar usuarios:', err)
+    });
+  }
+
   abrirModal() {
-     this.modalAbierto = true;
- }
-   cerrarModal() {
+    if (!this.puedeModificar) return;
+    this.resetForm();
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
     this.modalAbierto = false;
     this.resetForm();
   }
-   editarUsuario(usuario: any) {
-   this.usuarioEditando = usuario;
-    this.nuevoUsuario = {
-       nombres: usuario.nombres,
-       apellidos: usuario.apellidos,
-       correo: usuario.correo,
-       contrasena: '',
-       confirmar: '',
-       estado: usuario.estado
-    };
-   this.modalAbierto = true;
- }
-   eliminarUsuario(usuario: any) {
-   const confirmar = confirm(`¿Eliminar a ${usuario.nombre}?`);
-   if (!confirmar) return;
-   this.http.delete(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`)
-      .subscribe({
-       next: () => {
-       this.cargarUsuarios();
-      },
-         error: (err) => {
-         console.error(err);
-           alert('Error al eliminar usuario');
-      }
-   });
-}
 
- guardarUsuario() {
-      if (!this.nuevoUsuario.nombres || !this.nuevoUsuario.correo) {
+  editarUsuario(usuario: any) {
+    if (!this.puedeModificar) return;
+    this.usuarioEditando = usuario;
+    this.nuevoUsuario = {
+      nombres: usuario.nombres,
+      apellidos: usuario.apellidos,
+      correo: usuario.correo,
+      contrasena: '',
+      confirmar: '',
+      estado: usuario.estado,
+      id_rol: Number(usuario.id_rol)
+    };
+    this.modalAbierto = true;
+  }
+
+  eliminarUsuario(usuario: any) {
+    if (!this.puedeModificar) return;
+    if (!confirm(`¿Eliminar a ${usuario.nombreCompleto}?`)) return;
+
+    this.http.delete(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`).subscribe({
+      next: () => this.cargarUsuarios(),
+      error: (err) => {
+        const msg = err.error?.message || 'Error al eliminar usuario';
+        alert(msg);
+      }
+    });
+  }
+
+  guardarUsuario() {
+    if (!this.puedeModificar) return;
+    if (!this.nuevoUsuario.nombres || !this.nuevoUsuario.correo) {
       alert('Completa los campos obligatorios');
       return;
     }
-     if (!this.usuarioEditando) {
-     if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
-     alert('Las contraseñas no coinciden');
+
+    const payload = {
+      nombres: this.nuevoUsuario.nombres,
+      apellidos: this.nuevoUsuario.apellidos,
+      correo: this.nuevoUsuario.correo,
+      contrasena: this.nuevoUsuario.contrasena,
+      estado: this.nuevoUsuario.estado,
+      id_rol: Number(this.nuevoUsuario.id_rol)
+    };
+
+    if (!this.usuarioEditando) {
+      if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
+        alert('Las contraseñas no coinciden');
         return;
       }
-         this.http.post('http://localhost:3000/api/usuarios', this.nuevoUsuario)
-        .subscribe({
+
+      this.http.post('http://localhost:3000/api/usuarios', payload).subscribe({
         next: () => {
-            this.cargarUsuarios();
-           this.cerrarModal();
-            },
-        error: () => {
-           alert('Error al crear usuario');
-          }
-        });
+          this.cargarUsuarios();
+          this.cerrarModal();
+        },
+        error: (err) => alert(err.error?.message || 'Fallo inesperado al crear usuario.')
+      });
     } else {
-         this.http.put(
-        `http://localhost:3000/api/usuarios/${this.usuarioEditando.id_usuario}`,
-         this.nuevoUsuario
-      ).subscribe({
-          next: () => {
-         this.cargarUsuarios();
-         this.cerrarModal();
-      },
-         error: () => {
-         alert('Error al actualizar usuario');
-       }
-       });
+      if (this.nuevoUsuario.contrasena.trim() !== '' && this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
+        alert('Las contraseñas no coinciden');
+        return;
       }
-     }
-    resetForm() {
-      this.nuevoUsuario = {
+
+      this.http.put(`http://localhost:3000/api/usuarios/${this.usuarioEditando.id_usuario}`, payload).subscribe({
+        next: () => {
+          this.cargarUsuarios();
+          this.cerrarModal();
+        },
+        error: (err) => alert(err.error?.message || 'Fallo inesperado al actualizar usuario.')
+      });
+    }
+  }
+
+  resetForm() {
+    this.nuevoUsuario = {
       nombres: '',
       apellidos: '',
       correo: '',
       contrasena: '',
       confirmar: '',
-      estado: 'Activo'
+      estado: 'Activo',
+      id_rol: 1
     };
     this.usuarioEditando = null;
   }

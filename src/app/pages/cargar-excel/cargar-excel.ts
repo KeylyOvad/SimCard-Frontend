@@ -1,101 +1,148 @@
-import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router'; 
-import { CommonModule } from '@angular/common'; 
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
+
+import { Header } from '../../shared/header/header';
+import { SimService } from '../../services/sim.service';
+
+// Componentes PrimeNG
+import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MessageModule } from 'primeng/message';
+import { TableModule } from 'primeng/table';
+
+interface ResultadoImportacion {
+  guardadas?: number;
+  omitidas?: number;
+  error?: boolean;
+  mensaje?: string;
+}
+
+interface ErrorFila {
+  fila: string | number;
+  error: string;
+}
 
 @Component({
   selector: 'app-cargar-excel',
-  standalone: true, 
-  imports: [RouterLink, CommonModule], 
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    Header,
+    ButtonModule,
+    ProgressSpinnerModule,
+    MessageModule,
+    TableModule
+  ],
   templateUrl: './cargar-excel.html',
   styleUrls: ['./cargar-excel.css']
 })
 export class CargarExcelComponent {
   archivoSeleccionado: File | null = null;
-  estaCargando = false;
-  mostrarConsola = false;
-  progreso = 0;
-  logs: string[] = ['Esperando interacción del operador...'];
+  nombreArchivo = '';
 
-  estadoPaso1 = 'Pendiente'; colorPaso1 = '#718096';
-  estadoPaso2 = 'Pendiente'; colorPaso2 = '#718096';
-  estadoPaso3 = 'Pendiente'; colorPaso3 = '#718096';
+  cargando = false;
+  resultado: ResultadoImportacion | null = null;
+  errores: ErrorFila[] = [];
 
-  private urlBackend = 'http://localhost:3000/api/carga-excel/procesar'; 
+  constructor(
+    private simService: SimService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
-  constructor(private http: HttpClient) {}
-
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (file) {
-      this.archivoSeleccionado = file;
-      this.logs.push(`📂 Archivo seleccionado: ${file.name}`);
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.archivoSeleccionado = input.files[0];
+      this.nombreArchivo = this.archivoSeleccionado.name;
+      this.resetEstado();
     }
   }
 
-  async onUpload() {
-    if (!this.archivoSeleccionado) {
-      alert('Por favor, selecciona un archivo primero.');
-      return;
+  // Métodos para permitir Arrastrar y Soltar (Drag & Drop)
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      this.archivoSeleccionado = event.dataTransfer.files[0];
+      this.nombreArchivo = this.archivoSeleccionado.name;
+      this.resetEstado();
     }
+  }
 
-    this.estaCargando = true;
-    this.mostrarConsola = true;
-    this.logs = [`🚀 [${new Date().toLocaleTimeString()}] Iniciando Carga Técnica CENS...`];
+  limpiarArchivo(inputElement?: HTMLInputElement): void {
+    this.archivoSeleccionado = null;
+    this.nombreArchivo = '';
+    this.resetEstado();
 
-    try {
-      // Simulación Paso 1: Leer el binario localmente
-      this.estadoPaso1 = 'Leyendo...'; this.colorPaso1 = '#D97706';
-      this.progreso = 25;
-      await this.esperar(600); 
-      this.estadoPaso1 = '✔ Completo'; this.colorPaso1 = '#385623';
-      this.logs.push('✔ Archivo mapeado en memoria local.');
+    if (inputElement) {
+      inputElement.value = '';
+    }
+  }
 
-      // Simulación Paso 2: Validar formatos y limpiar campos pesados
-      this.estadoPaso2 = 'Validando...'; this.colorPaso2 = '#D97706';
-      this.progreso = 50;
-      await this.esperar(700);
-      this.estadoPaso2 = '✔ Completo'; this.colorPaso2 = '#385623';
-      this.logs.push('✔ Formatos corregidos a Texto Puro (@) con éxito.');
+  subirExcel(): void {
+    if (!this.archivoSeleccionado) return;
 
-      // Paso 3: Transmisión real vía HTTP hacia Node.js
-      this.estadoPaso3 = 'Transmitiendo...'; this.colorPaso3 = '#D97706';
-      this.logs.push('📡 Subiendo datos masivos al servidor...');
+    this.cargando = true;
+    this.resetEstado();
 
-      const formData = new FormData();
-      formData.append('archivoExcel', this.archivoSeleccionado);
+    const formData = new FormData();
+    formData.append('archivo', this.archivoSeleccionado);
 
-      this.http.post<any>(this.urlBackend, formData).subscribe({
-        next: (res) => {
-          this.progreso = 100;
-          this.estadoPaso3 = '✔ Completo'; this.colorPaso3 = '#385623';
-          const extras = res.registrosProcesados ? ` (${res.registrosProcesados} registros guardados)` : '';
-          this.logs.push(`🎉 ¡Éxito! Servidor responde: ${res.message || 'Datos procesados.'}${extras}`);
-          this.estaCargando = false;
+    this.simService.importarExcel(formData)
+      .pipe(
+        finalize(() => {
+          this.cargando = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (res: any) => {
+          this.resultado = {
+            guardadas: res.guardadas || 0,
+            omitidas: res.omitidas || 0
+          };
+
+          if (res.errores && res.errores.length > 0) {
+            this.errores = res.errores.map((e: any) => ({
+              fila: e.fila || 'N/A',
+              error: this.formatearMensajeError(e)
+            }));
+          } else {
+            this.errores = [];
+          }
         },
         error: (err) => {
-          this.progreso = 100;
-          this.estadoPaso3 = '❌ Fallido'; this.colorPaso3 = '#E53E3E';
-          
-          // CORRECCIÓN: Extraemos de forma precisa el mensaje interno enviado desde el backend
-          const errorServidor = err.error?.message || err.message || 'Fallo indeterminado.';
-          this.logs.push(`❌ Error 500 en el Servidor: ${errorServidor}`);
-          
-          if (err.error?.error) {
-              this.logs.push(`🔍 Detalle técnico: ${err.error.error}`);
-          }
-          
-          this.estaCargando = false;
+          console.error('Error al importar Excel:', err);
+
+          this.resultado = {
+            error: true,
+            mensaje: 'No se pudo procesar el archivo. Valida que el servidor esté activo y el formato sea el correcto.'
+          };
         }
       });
-
-    } catch (error) {
-      this.logs.push('❌ Error crítico en el hilo de ejecución de la interfaz.');
-      this.estaCargando = false;
-    }
   }
 
-  esperar(ms: number): Promise<void> {
-    return new Promise<void>(resolve => setTimeout(resolve, ms));
+  private resetEstado(): void {
+    this.resultado = null;
+    this.errores = [];
+  }
+
+  private formatearMensajeError(e: any): string {
+    if (Array.isArray(e.problemas)) return e.problemas.join(', ');
+    if (typeof e.problemas === 'string') return e.problemas;
+    return e.error || e.mensaje || 'Datos inconsistentes con el formato esperado';
   }
 }

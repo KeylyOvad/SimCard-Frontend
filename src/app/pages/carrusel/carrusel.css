@@ -1,0 +1,82 @@
+.carrusel-wrapper {
+  --carrusel-accent: #97C459;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.hero-slide {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #030805;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 1. Fondo difuminado */
+.slide-bg-blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(25px) brightness(0.4);
+  transform: scale(1.1);
+  pointer-events: none;
+}
+
+/* 2. Imagen principal nítida */
+.slide-bg {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+/* 3. Sombreado y Contenido */
+.slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.3) 40%, transparent 70%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.slide-content {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  max-width: 550px;
+  color: #fff;
+  z-index: 3;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.eyebrow {
+  color: var(--carrusel-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.slide-content h2 {
+  margin: 6px 0 10px;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.slide-content p {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.4;
+}
+
+/* Indicador PrimeNG activo */
+:host ::ng-template p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
+  background-color: var(--carrusel-accent) !important;
+}

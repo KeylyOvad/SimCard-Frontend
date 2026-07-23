@@ -1,48 +1,60 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; 
+import { Router, RouterModule } from '@angular/router';
 
 import { SimService } from '../../services/sim.service';
+import { AuthService } from '../../services/auth.service';
 import { Sim } from '../../interceptors/models/sim.model';
 import { Header } from '../../shared/header/header';
+import { CarruselComponent } from '../carrusel/carrusel';
+import { Historial } from '../historial/historial';
+
+// Módulos UI de PrimeNG
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Header],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    Header,
+    CarruselComponent,
+    Historial,
+    TableModule,
+    ButtonModule,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule
+  ],
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
 })
 export class Home implements OnInit {
-
   simCards: Sim[] = [];
-  searchText = '';
+  puedeModificar = false;
 
-  currentPage = 1;
-  itemsPerPage = 10;
-
-  stats = {
-    total: 0,
-    active: 0,
-    inactive: 0,
-    operators: 0,
-  };
-
+  mostrarModalHistorial = false;
   historialSim: any[] = [];
-  mostrarModalHistorial: boolean = false;
-  simSeleccionadaNumero: string = '';
+  simSeleccionadaNumero = '';
+
+  stats = { total: 0, claro: 0, movistar: 0, operators: 0 };
 
   constructor(
     private router: Router,
     private simService: SimService,
-    private cd: ChangeDetectorRef,
-    private http: HttpClient
+    private authService: AuthService,
+    private cd: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.puedeModificar = this.authService.esAdmin();
     this.obtenerSims();
   }
 
@@ -53,114 +65,102 @@ export class Home implements OnInit {
         this.calcularStats();
         this.cd.detectChanges();
       },
-      error: (err) => {
-        console.error('Error al traer SIMS:', err);
-      }
+      error: (err) => console.error('Error al traer SIMS:', err)
     });
   }
 
   calcularStats() {
     this.stats.total = this.simCards.length;
+    this.stats.claro = this.simCards.filter(s => {
+      const opText = s.operador?.toString().toLowerCase() || '';
+      const opId = Number((s as any).id_operador || (s as any).operadorId);
+      return opId === 1 || opText.includes('claro');
+    }).length;
 
-    this.stats.active = this.simCards.filter(
-      s => s.estado === 'Activa'
-    ).length;
+    this.stats.movistar = this.simCards.filter(s => {
+      const opText = s.operador?.toString().toLowerCase() || '';
+      const opId = Number((s as any).id_operador || (s as any).operadorId);
+      return opId === 2 || opText.includes('movistar');
+    }).length;
 
-    this.stats.inactive = this.simCards.filter(
-      s => s.estado === 'Desactivada'
-    ).length;
-
-    const operadoresUnicos = new Set(
-      this.simCards.map(s => s.operador)
-    );
-
+    const operadoresUnicos = new Set(this.simCards.map(s => s.operador || (s as any).id_operador));
     this.stats.operators = operadoresUnicos.size;
   }
 
-  get filteredSims(): Sim[] {
-    return this.simCards.filter(sim =>
-      Object.values(sim).some(value =>
-        value?.toString().toLowerCase().includes(this.searchText.toLowerCase())
-      )
-    );
+  // Descarga del reporte Excel
+  generateReport() {
+    this.simService.descargarReporteExcel().subscribe({
+      next: (archivoBlob: Blob) => {
+        const urlDescarga = window.URL.createObjectURL(archivoBlob);
+        const linkTemporal = document.createElement('a');
+        linkTemporal.href = urlDescarga;
+        linkTemporal.download = 'Reporte_SIMCARDS_CENS.xlsx'; 
+        
+        document.body.appendChild(linkTemporal);
+        linkTemporal.click();
+        
+        document.body.removeChild(linkTemporal);
+        window.URL.revokeObjectURL(urlDescarga);
+      },
+      error: async (err) => {
+        console.error('Error al descargar:', err);
+        if (err.error instanceof Blob) {
+          try {
+            const textoError = await err.error.text();
+            const jsonError = JSON.parse(textoError);
+            alert(`⚠️ Error: ${jsonError.message}`);
+          } catch {
+            alert('⚠️ Error al procesar el reporte.');
+          }
+        } else {
+          alert('⚠️ Sesión expirada o permisos insuficientes.');
+        }
+      }
+    });
   }
 
-  get paginatedSims(): Sim[] {
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredSims.slice(start, start + this.itemsPerPage);
+  addSim() { 
+    this.router.navigate(['/sim-form']); 
   }
 
-  nextPage() {
-    if ((this.currentPage * this.itemsPerPage) < this.filteredSims.length) {
-      this.currentPage++;
+  editSim(sim: any) { 
+    if (sim.id_sim) {
+      this.router.navigate(['/sim-form', sim.id_sim]);
+    } 
+  }
+
+  deleteSim(sim: any) {
+    const idABorrar = sim.id_sim;
+    if (!idABorrar) { 
+      alert('❌ ID no encontrado.'); 
+      return; 
+    }
+
+    if (confirm(`¿Estás seguro de eliminar la línea ${sim.num_linea}?`)) {
+      this.simService.deleteSim(idABorrar).subscribe({
+        next: () => {
+          alert('✅ Eliminado correctamente.');
+          this.obtenerSims();
+        },
+        error: () => alert('❌ Error al eliminar.')
+      });
     }
   }
 
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  uploadExcel() {
-    console.log('Subir Excel');
-  }
-
- generateReport() {
-  const url = 'http://localhost:3000/api/reportes/excel-general';
-  window.location.href = url;
-}
-
-  addSim() {
-    this.router.navigate(['/sim-form']);
-  }
   verHistorial(sim: any) {
-    const id = sim.id_sim;
-    this.simSeleccionadaNumero = sim.num_sim;
-
-    this.http.get(`http://localhost:3000/api/sims/${id}/historial`).subscribe({
-      next: (data: any) => {
+    this.simSeleccionadaNumero = sim.num_linea;
+    this.simService.getHistorial(sim.id_sim).subscribe({
+      next: (data) => {
         this.historialSim = data;
         this.mostrarModalHistorial = true;
       },
-      error: (err) => {
-        console.error('Error al obtener historial:', err);
-        alert("No se pudo cargar el historial.");
-      }
+      error: () => alert('Error al cargar historial.')
     });
   }
 
   cerrarHistorial() {
     this.mostrarModalHistorial = false;
     this.historialSim = [];
-  }
-
-  editSim(sim: any) {
-    const id = sim.id_sim; 
-    if (id) {
-      this.router.navigate(['/sim-form', id]);
-    }
-  }
-
-  deleteSim(sim: any) {
-    const idABorrar = sim.id_sim;
-
-    if (!idABorrar) {
-      alert("❌ No se encontró el ID de este registro.");
-      return;
-    }
-
-    if (confirm(`¿Estás seguro de que deseas eliminar la línea ${sim.num_linea}?`)) {
-      this.simService.deleteSim(idABorrar).subscribe({
-        next: () => {
-          alert("✅ Registro eliminado correctamente.");
-          this.obtenerSims(); 
-        },
-        error: (err: any) => { 
-          console.error('Error al borrar:', err);
-          alert("❌ Hubo un fallo en el servidor al intentar eliminar.");
-        }
-      });
-    }
+    this.simSeleccionadaNumero = '';
   }
 }

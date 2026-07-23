@@ -1,50 +1,132 @@
 <app-header></app-header>
 
-<div class="ubicacion-container">
-  <header class="header">
+<div class="page-container">
+  <!-- Título principal -->
+  <header class="page-header">
     <h1>Gestión de Ubicaciones</h1>
     <p>Administración de ubicaciones</p>
   </header>
-  <div class="ubicacion-actions">
-    <input class="search" type="text" placeholder="Buscar ubicación..."
-           [(ngModel)]="searchText" />
-    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Ubicación</button>
-  </div>
-  <table>
-    <thead>
+
+  <!-- Tabla PrimeNG -->
+  <p-table
+    #dt
+    [value]="ubicaciones"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['descripcion']"
+    [showGridlines]="true"
+    styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
+  >
+    <!-- Buscador y botón Agregar -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar ubicación..."
+            class="w-full"
+          />
+        </p-iconfield>
+
+        <p-button
+          *ngIf="puedeModificar"
+          label="Agregar Ubicación"
+          icon="pi pi-plus"
+          styleClass="btn-primary-cens"
+          (onClick)="abrirModal()"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados alineados al estándar del proyecto -->
+    <ng-template pTemplate="header">
       <tr>
-        <th>ID</th>
-        <th>Descripción</th>
-        <th>Acción</th>
+        <th style="width: 15%;" class="text-center">ID</th>
+        <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
+          Descripción <p-sortIcon field="descripcion" />
+        </th>
+        <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
       </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let ubi of ubicaciones | filter:searchText:['descripcion']; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ ubi.descripcion }}</td>
-        <td class="actions">
-          <button class="edit" (click)="editarUbicacion(ubi)">✏️</button>
-          <button class="delete" (click)="eliminarUbicacion(ubi.id_ubicacion)">🗑️</button>
+    </ng-template>
+
+    <!-- Filas -->
+    <ng-template pTemplate="body" let-ubi let-rowIndex="rowIndex">
+      <tr>
+        <td class="text-center">{{ ubi.id_ubicacion || (rowIndex + 1) }}</td>
+        <td class="text-left"><strong>{{ ubi.descripcion }}</strong></td>
+        
+        <td *ngIf="puedeModificar" class="text-center">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action edit"
+              title="Editar"
+              (click)="editarUbicacion(ubi)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-action delete"
+              title="Eliminar"
+              (click)="eliminarUbicacion(ubi)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
         </td>
       </tr>
-    </tbody>
-  </table>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="puedeModificar ? 3 : 2" class="p-4 text-center">
+          No se encontraron ubicaciones registradas.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
-<div class="modal-overlay" *ngIf="modalAbierto">
-  <div class="modal">
-    <div class="modal-header">
+
+<!-- Modal Dialog PrimeNG -->
+<p-dialog
+  [(visible)]="modalAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="modal-custom-cens"
+  (onHide)="cerrarModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-header-custom">
       <span class="icon">📍</span>
-      <h2>{{ ubicacionEditando ? 'Editar Ubicación' : 'Nueva Ubicación' }}</h2>
+      <h3>{{ ubicacionEditando ? 'Editar Ubicación' : 'Nueva Ubicación' }}</h3>
     </div>
-    <form class="modal-body">
-      <div class="form-group full">
-        <input type="text" placeholder="Descripción"
-               [(ngModel)]="nuevaUbicacion.descripcion" name="descripcion" />
-      </div>
-    </form>
-    <div class="modal-footer">
-      <button type="button" class="btn-guardar" (click)="guardarUbicacion()">Guardar</button>
-      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+  </ng-template>
+
+  <form class="dialog-form" (ngSubmit)="guardarUbicacion()">
+    <div class="field">
+      <label for="descripcionUbicacion">Descripción *</label>
+      <input 
+        id="descripcionUbicacion"
+        pInputText 
+        type="text" 
+        [(ngModel)]="nuevaUbicacion.descripcion" 
+        name="descripcion" 
+        placeholder="Ej: Sede Central, Almacén 1..."
+        class="w-full" 
+        required
+      />
     </div>
-  </div>
-</div>
+
+    <div class="modal-footer-custom">
+      <button type="submit" class="btn-guardar-custom">Guardar</button>
+      <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </form>
+</p-dialog>

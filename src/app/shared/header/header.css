@@ -1,85 +1,74 @@
+/* Header Principal */
+/* Header Principal con degradado neón/brillante */
 .top-bar {
   height: 60px;
-  background: linear-gradient(90deg, #2e7d32, #66bb6a);
+  /* Verde esmeralda neón hacia un verde lima vibrante */
+  background: linear-gradient(90deg, #10b981, #22c55e);
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
-  font-family: 'Poppins', sans-serif;
 }
 
-.top-left {
+/* Para el texto del enlace activo y el avatar */
+nav a.active, .avatar {
+  background: #ffffff;
+  color: #10b981; /* O puedes usar #059669 si quieres un poquitico más de contraste */
+  font-weight: 700;
+}
+
+/* Flexbox agrupado para la izquierda y el usuario */
+.top-left, nav, .user-menu {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
 }
+
 .logo {
-  height: 60px;
-  width: auto;
+  height: 48px;
+  object-fit: contain;
 }
 
-nav {
-  display: flex;
-  gap: 10px;
-}
-
+/* Menú de Navegación */
 nav a {
   color: white;
   padding: 8px 16px;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: background 0.2s;
 }
 
-nav a:hover {
+nav a:hover, .user-menu:hover {
   background: rgba(255, 255, 255, 0.2);
-  color: #e8f5e9;
-  transform: translateY(-2px);
 }
 
 nav a.active {
-  background: white;
-  color: #0d8b4a;
-  font-weight: 600;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background: #ffffff;
+  color: #00875a;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.top-right {
-  font-weight: 600;
-  color: white;
-}
-
+/* Usuario / Avatar */
 .user-menu {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  position: relative;
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 12px;
-  transition: all 0.3s ease;
-  position: relative;
 }
-
-.user-menu:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
 
 .avatar {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: white;
-  color: #2e7d32;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  text-transform: uppercase;
+  background: #ffffff;
+  color: #00875a;
+  display: grid;
+  place-content: center;
+  font-weight: 700;
 }
-
 
 .user-name {
   font-weight: 600;
@@ -87,29 +76,40 @@ nav a.active {
 }
 
 .arrow {
-  font-size: 12px;
-  opacity: 0.8;
+  font-size: 11px;
 }
 
+/* Menú desplegable */
 .dropdown {
   position: absolute;
-  top: 110%;
+  top: 120%;
   right: 0;
-  background: white;
-  color: #333;
-  min-width: 160px;
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  overflow: hidden;
+  background: #ffffff;
+  min-width: 200px;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #f1f5f9;
+  z-index: 1000;
 }
 
-
-.dropdown-item {
+/* Botón de Cerrar Sesión */
+.custom-btn-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 10px 14px;
+  background: #fdf2f2;
+  border: 1px solid #f5c2c2;
+  border-radius: 8px;
+  color: #9b1c1c;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
 }
 
-.dropdown-item:hover {
-  background: #f5f5f5;
+.custom-btn-logout:hover {
+  background: #fde8e8;
 }

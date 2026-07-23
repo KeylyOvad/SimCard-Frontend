@@ -8,22 +8,26 @@
 
     <form #form="ngForm" novalidate>
       <h3>Detalles de Sim</h3>
+      
       <div class="grid-main">
         <div class="field-group">
           <label>Número de sim</label>
-          <input [(ngModel)]="sim.numeroSim" name="numeroSim" placeholder="Ingrese número">
+          <input [(ngModel)]="sim.numeroSim" name="numeroSim" placeholder="Ingrese número" autocomplete="off">
         </div>
+
         <div class="field-group">
           <label>Número de Línea</label>
-          <input [(ngModel)]="sim.numeroLinea" name="numeroLinea" placeholder="Ingrese línea">
+          <input [(ngModel)]="sim.numeroLinea" name="numeroLinea" placeholder="Ingrese línea" autocomplete="off">
         </div>
+
         <div class="field-group">
           <label>PIN</label>
-          <input [(ngModel)]="sim.pin" name="pin" placeholder="####">
+          <input [(ngModel)]="sim.pin" name="pin" placeholder="0000" maxlength="4" autocomplete="off">
         </div>
+
         <div class="field-group">
           <label>PUK</label>
-          <input [(ngModel)]="sim.puk" name="puk" placeholder="####">
+          <input [(ngModel)]="sim.puk" name="puk" placeholder="00000000" maxlength="8" autocomplete="off">
         </div>
         
         <div class="field-group">
@@ -67,29 +71,70 @@
         </div>
       </div>
 
+      <!--  IP / APN -->
       <div class="grid-2">
+        <!-- Dirección IP -->
         <div class="field-group">
           <label>Dirección IP</label>
           <div class="row-inline">
-            <input placeholder="xxx.xxx.xxx.xxx" [(ngModel)]="nuevaIp" name="ipTemp">
-            <button type="button" class="btn-add" (click)="agregarIp()">+</button>
+            <input 
+              class="input-dynamic"
+              placeholder="Ej: 192.168.1.30" 
+              [(ngModel)]="nuevaIp" 
+              name="ipTemp"
+              (keyup.enter)="agregarIp()"
+              autocomplete="off"
+            >
+            <button 
+              type="button" 
+              class="btn-add-pro" 
+              (click)="agregarIp()"
+              title="Agregar IP"
+            >
+              <span>+</span>
+            </button>
           </div>
+
           <div class="list-tags">
-            <span *ngFor="let ip of sim.ip; let i = index" class="tag">{{ ip }} <i (click)="eliminarIp(i)">×</i></span>
+            <span *ngFor="let ip of sim.ip; let i = index" class="tag">
+              {{ ip }} 
+              <i (click)="eliminarIp(i)" title="Eliminar IP">×</i>
+            </span>
           </div>
         </div>
+
+        <!-- APN -->
         <div class="field-group">
           <label>APN</label>
           <div class="row-inline">
-            <input [(ngModel)]="nuevoApn" name="apnTemp" placeholder="Nombre APN">
-            <button type="button" class="btn-add" (click)="agregarApn()">+</button>
+            <input 
+              class="input-dynamic"
+              [(ngModel)]="nuevoApn" 
+              name="apnTemp" 
+              placeholder="Ej: movistar.pe"
+              (keyup.enter)="agregarApn()"
+              autocomplete="off"
+            >
+            <button 
+              type="button" 
+              class="btn-add-pro" 
+              (click)="agregarApn()"
+              title="Agregar APN"
+            >
+              <span>+</span>
+            </button>
           </div>
+
           <div class="list-tags">
-            <span *ngFor="let apn of sim.apn; let i = index" class="tag">{{ apn }} <i (click)="eliminarApn(i)">×</i></span>
+            <span *ngFor="let apn of sim.apn; let i = index" class="tag">
+              {{ apn }} 
+              <i (click)="eliminarApn(i)" title="Eliminar APN">×</i>
+            </span>
           </div>
         </div>
       </div>
 
+      <!-- Ubicación y Asignacion -->
       <h3>Ubicación y Responsable</h3>
       <div class="grid-main">
         <div class="field-group">
@@ -99,6 +144,7 @@
             <option *ngFor="let r of data.responsables" [value]="r.id_responsable">{{ r.descripcion }}</option>
           </select>
         </div>
+
         <div class="field-group">
           <label>Ubicación</label>
           <select [(ngModel)]="sim.ubicacionId" name="ubicacionId">
@@ -106,6 +152,7 @@
             <option *ngFor="let u of data.ubicaciones" [value]="u.id_ubicacion">{{ u.descripcion }}</option>
           </select>
         </div>
+
         <div class="field-group">
           <label>Destino</label>
           <select [(ngModel)]="sim.destinoId" name="destinoId">
@@ -115,10 +162,16 @@
         </div>
       </div>
 
+      <!-- Observaciones -->
       <div class="notes-section">
         <div class="field-group">
           <label>Observación Técnica</label>
-          <textarea [(ngModel)]="sim.observacion" name="observacion" rows="2" placeholder="Notas internas sobre la sim..."></textarea>
+          <textarea 
+            [(ngModel)]="sim.observacion" 
+            name="observacion" 
+            rows="2" 
+            placeholder="Notas internas sobre la SIM...">
+          </textarea>
         </div>
 
         <div class="field-group" *ngIf="isEdit" style="margin-top: 15px;">
@@ -136,6 +189,7 @@
         </div>
       </div>
 
+      <!-- Botones-->
       <div class="form-footer">
         <button 
           type="button" 

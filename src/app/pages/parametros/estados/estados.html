@@ -1,50 +1,132 @@
 <app-header></app-header>
-<div class="estado-container">
-  <header class="header">
+
+<div class="page-container">
+  <!-- Título principal -->
+  <header class="page-header">
     <h1>Gestión de Estados</h1>
-    <p>Administración de estados</p>
+    <p>Administración de estados de SIM Cards</p>
   </header>
 
-  <div class="estado-actions">
-    <input class="search" type="text" placeholder="Buscar estado..."
-           [(ngModel)]="searchText" />
-    <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Estado</button>
-  </div>
-   <table>
-       <thead>
-          <tr>
-            <th>ID</th>
-            <th>Descripción</th>
-            <th>Acción</th>
-        </tr>
-    </thead>
-     <tbody>
-        <tr *ngFor="let est of estados | filter:searchText:['descripcion']; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ est.descripcion }}</td>
-        <td class="actions">
-            <button class="edit" (click)="editarEstado(est)">✏️</button>
-            <button class="delete" (click)="eliminarEstado(est.id_estado)">🗑️</button>
-        </td>
-         </tr>
-   </tbody>
-    </table>
-   </div>
-    <div class="modal-overlay" *ngIf="modalAbierto">
-       <div class="modal">
-       <div class="modal-header">
-        <span class="icon">📌</span>
-         <h2>{{ estadoEditando ? 'Editar Estado' : 'Nuevo Estado' }}</h2>
-             </div>
-         <form class="modal-body">
-              <div class="form-group full">
-            <input type="text" placeholder="Descripción"
-               [(ngModel)]="nuevoEstado.descripcion" name="descripcion" />
-     </div>
-     </form>
+  <!-- Tabla de estados PrimeNG -->
+  <p-table
+    #dt
+    [value]="estados"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['descripcion']"
+    [showGridlines]="true"
+    styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
+  >
+    <!-- Buscador y botón Agregar -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar estado..."
+            class="w-full"
+          />
+        </p-iconfield>
 
-            <div class="modal-footer">
-              <button type="button" class="btn-guardar" (click)="guardarEstado()">Guardar</button>      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-            </div>
-    </div>
+        <p-button
+          *ngIf="puedeModificar"
+          label="Agregar Estado"
+          icon="pi pi-plus"
+          styleClass="btn-primary-cens"
+          (onClick)="abrirModal()"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados alineados al estándar del proyecto -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 15%;" class="text-center">ID</th>
+        <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
+          Descripción <p-sortIcon field="descripcion" />
+        </th>
+        <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <!-- Filas -->
+    <ng-template pTemplate="body" let-est let-rowIndex="rowIndex">
+      <tr>
+        <td class="text-center">{{ est.id_estado || (rowIndex + 1) }}</td>
+        <td class="text-left"><strong>{{ est.descripcion }}</strong></td>
+        
+        <td *ngIf="puedeModificar" class="text-center">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action edit"
+              title="Editar"
+              (click)="editarEstado(est)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-action delete"
+              title="Eliminar"
+              (click)="eliminarEstado(est)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="puedeModificar ? 3 : 2" class="p-4 text-center">
+          No se encontraron estados registrados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
+
+<!-- Modal Dialog PrimeNG -->
+<p-dialog
+  [(visible)]="modalAbierto"
+  [modal]="true"
+  [style]="{ width: '420px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="modal-custom-cens"
+  (onHide)="cerrarModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-header-custom">
+      <span class="icon">📌</span>
+      <h3>{{ estadoEditando ? 'Editar Estado' : 'Nuevo Estado' }}</h3>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form" (ngSubmit)="guardarEstado()">
+    <div class="field">
+      <label for="descripcionEstado">Descripción *</label>
+      <input 
+        id="descripcionEstado"
+        pInputText 
+        type="text" 
+        [(ngModel)]="nuevoEstado.descripcion" 
+        name="descripcion" 
+        placeholder="Ej: Activo, Suspendido..."
+        class="w-full" 
+        required
+      />
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="submit" class="btn-guardar-custom">Guardar</button>
+      <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </form>
+</p-dialog>

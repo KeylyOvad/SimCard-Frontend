@@ -1,112 +1,81 @@
-.login-container {
-  height: 100vh;
-  background: url('/assets/fondo-login.png') no-repeat center center;
-  background-size: cover;
+/* Centrado en pantalla con fondo de red */
+.login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.card {
-  background: rgba(245, 242, 235, 0.95);
-  padding: 2.5rem 2.8rem 2.6rem; 
-  border-radius: 20px;
-  width: 340px;             
-  max-width: 380px;
-
-  position: relative;
-
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.15),
-    0 18px 45px rgba(0, 0, 0, 0.35);
-
-  backdrop-filter: blur(6px);
-}
-
-.logos {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-
-.logos img {
-  max-height: 150px; 
-  width: auto;
-}
-
-
-input {
+  min-height: 100vh;
   width: 100%;
-  box-sizing: border-box;
-  padding: 13px 16px;
-  margin-bottom: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background: #fff;
-  font-size: 14px;
-  color: #333;
+  background: url('/assets/fondo-login.png') no-repeat center center / cover;
+}
+.login-card {
+  background-color: rgba(246, 244, 238, 0.88); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  
+  width: 100%;
+  max-width: 390px;
+  padding: 3rem 2.5rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+.logo-container {
+  margin-bottom: 2rem;
+}
+.brand-logo {
+  max-width: 180px;
+  height: auto;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 0.85rem 1rem !important;
+  border-radius: 10px !important;
+  border: 1.5px solid #e2e0d8 !important;
+  background-color: #ffffff !important;
+  font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.25s ease-in-out !important;
 }
 
-input:focus {
-  border-color: #1a3a33;
+.custom-input::placeholder {
+  color: #9e9e9e;
 }
 
-input::placeholder {
-  color: #aaa;
+.custom-input:focus {
+  border-color: #00875a !important; 
+  box-shadow: 0 0 0 4px rgba(0, 135, 90, 0.18) !important; 
 }
 
-button {
+.btn-entrar {
   width: 100%;
-  padding: 14px;
-  background: #005E2B;
-  color: white;
+  background-color: #006633;
+  color: #ffffff;
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  padding: 0.9rem;
+  border-radius: 12px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  font-size: 0.95rem;
+  letter-spacing: 1.2px;
   cursor: pointer;
-  margin-top: 4px;
-  transition: background 0.2s;
+  margin-top: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0, 102, 51, 0.25);
+  transition: all 0.2s ease;
 }
 
-button:hover {
-  background: #0d2e27;
+/* Animación al pasar el cursor sobre el botón */
+.btn-entrar:hover {
+  background-color: #004d26;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 102, 51, 0.35);
 }
 
-@media (max-width: 480px) {
-  .card {
-    width: 90%;
-    padding: 2rem 1.5rem;
-  }
-
-  .logos img {
-    width: 180px;
-  }
-
-  input {
-    padding: 12px 14px;
-    font-size: 13px;
-  }
-
-  button {
-    padding: 13px;
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 360px) {
-  .card {
-    width: 95%;
-    padding: 1.5rem 1.2rem;
-  }
-
-  .logos img {
-    width: 150px;
-  }
+.btn-entrar:active {
+  transform: translateY(0);
 }

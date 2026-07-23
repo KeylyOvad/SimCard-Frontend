@@ -1,94 +1,192 @@
 <app-header></app-header>
-<div class="usuarios-container">
-   <header class="header">
-     <h1>Gestión de Usuarios</h1>
-     <p>Administración de cuentas</p>
-     </header>
- <div class="usuarios-actions">
-      <input
-       class="search"
-       type="text"
-       placeholder="Buscar usuario..."
-       [(ngModel)]="searchText"
-     />
-     <button class="btn-agregar" (click)="abrirModal()">➕ Agregar Usuario</button>
-     </div>
-<table>
-     <thead>
-     <tr>
-     <th>Nombre</th>
-     <th>Correo</th>
-     <th>Estado</th>
-     <th>Acción</th>
 
- </tr>
-    </thead>
-    <tbody>
- <tr *ngFor="let usuario of usuarios">
-    <td>{{ usuario.nombre }}</td>
-    <td>{{ usuario.correo }}</td>
-   <td>
-      <span 
-       [class.activo]="usuario.estado === 'Activo'"
-       [class.inactivo]="usuario.estado === 'Inactivo'"
-      >
-       {{ usuario.estado }}
-     </span>
- </td>
-      <td class="actions">
-      <button class="edit" (click)="editarUsuario(usuario)">✏️</button>
-      <button class="delete" (click)="eliminarUsuario(usuario)">🗑️</button>
+<div class="page-container">
+  <!-- Encabezado Global -->
+  <header class="page-header">
+    <h1>Gestión de Usuarios</h1>
+    <p>Administración de cuentas de acceso al sistema</p>
+  </header>
 
-    </td>
- </tr>
-</tbody>
-</table>
+  <!-- Tabla usando la clase global cens-card-table y p-datatable-gridlines -->
+  <p-table
+    #dt
+    [value]="usuarios"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['nombreCompleto', 'correo', 'rolTexto', 'estado']"
+    styleClass="p-datatable-striped p-datatable-gridlines cens-card-table"
+  >
+    <!-- Header superior de la tabla -->
+    <ng-template pTemplate="caption">
+      <div class="table-header-actions">
+        <p-iconfield iconPosition="left" class="search-field">
+          <p-inputicon styleClass="pi pi-search" />
+          <input
+            pInputText
+            type="text"
+            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            placeholder="Buscar por nombre, correo o rol..."
+            class="w-full"
+          />
+        </p-iconfield>
+
+        <p-button
+          *ngIf="puedeModificar"
+          label="Agregar Usuario"
+          icon="pi pi-user-plus"
+          styleClass="btn-primary-cens"
+          (onClick)="abrirModal()"
+        ></p-button>
+      </div>
+    </ng-template>
+
+    <!-- Encabezados de Columnas -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="nombreCompleto">Nombre <p-sortIcon field="nombreCompleto" /></th>
+        <th pSortableColumn="correo">Correo <p-sortIcon field="correo" /></th>
+        <th pSortableColumn="estado">Estado <p-sortIcon field="estado" /></th>
+        <th pSortableColumn="rolTexto">Rol <p-sortIcon field="rolTexto" /></th>
+        <th *ngIf="puedeModificar" class="col-acciones">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <!-- Filas de Datos -->
+    <ng-template pTemplate="body" let-usuario>
+      <tr>
+        <td><strong>{{ usuario.nombreCompleto }}</strong></td>
+        <td>{{ usuario.correo }}</td>
+        <td>
+          <p-tag
+            [value]="usuario.estado"
+            [severity]="usuario.estado === 'Activo' ? 'success' : 'danger'"
+            [rounded]="true"
+          ></p-tag>
+        </td>
+        <td>
+          <p-tag
+            [value]="usuario.rolTexto"
+            [severity]="usuario.id_rol === 1 ? 'info' : 'secondary'"
+            [rounded]="true"
+          ></p-tag>
+        </td>
+        <td *ngIf="puedeModificar" class="col-acciones">
+          <div class="actions-wrapper">
+            <button
+              type="button"
+              class="btn-action edit"
+              title="Editar"
+              (click)="editarUsuario(usuario)"
+            >
+              <i class="pi pi-pencil"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-action delete"
+              title="Eliminar"
+              (click)="eliminarUsuario(usuario)"
+            >
+              <i class="pi pi-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- Mensaje vacío -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="puedeModificar ? 5 : 4" class="text-center p-4">
+          No se encontraron usuarios registrados.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 </div>
 
-      <div class="modal-overlay" *ngIf="modalAbierto">
-      <div class="modal">
-      <div class="modal-header">
-      <span class="icon">➕</span>
-      <h2>Nuevo Usuario</h2>
-</div>
-      <form class="modal-body">
-      <div class="form-grid">
-      <div class="form-group">
-      <input type="text" placeholder="Nombres"
-      [(ngModel)]="nuevoUsuario.nombres" name="nombres" />
- </div>
-       <div class="form-group">
-       <input type="text" placeholder="Apellidos"
-       [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" />
-        </div>
-  </div>
-        <div class="form-group full">
-        <input type="email" placeholder="Correo"
-        [(ngModel)]="nuevoUsuario.correo" name="correo" />
-   </div>
+<!-- Modal Formulario -->
+<p-dialog
+  [(visible)]="modalAbierto"
+  [modal]="true"
+  [style]="{ width: '520px' }"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="modal-custom-cens"
+  (onHide)="cerrarModal()"
+>
+  <ng-template pTemplate="header">
+    <div class="modal-header-custom">
+      <span class="icon">📋</span>
+      <h3>{{ usuarioEditando ? 'Editar Usuario' : 'Nuevo Usuario' }}</h3>
+    </div>
+  </ng-template>
+
+  <form class="dialog-form" (ngSubmit)="guardarUsuario()">
     <div class="form-grid">
-     <div class="form-group">
-        <input type="password" placeholder="Contraseña"
-         [(ngModel)]="nuevoUsuario.contrasena" name="contrasena" />A
-        </div>
-        <div class="form-group">
-        <input type="password" placeholder="Confirmar Contraseña"
-        [(ngModel)]="nuevoUsuario.confirmar" name="confirmar" />
-        </div>
-     </div>
+      <div class="field">
+        <label for="usrNombres">Nombres *</label>
+        <input id="usrNombres" pInputText type="text" [(ngModel)]="nuevoUsuario.nombres" name="nombres" class="w-full" required />
+      </div>
+      <div class="field">
+        <label for="usrApellidos">Apellidos</label>
+        <input id="usrApellidos" pInputText type="text" [(ngModel)]="nuevoUsuario.apellidos" name="apellidos" class="w-full" />
+      </div>
+    </div>
 
-        <div class="form-group full">
-        <select [(ngModel)]="nuevoUsuario.estado" name="estado">
-        <option>Activo</option>
-        <option>Inactivo</option>
-        </select>
-  </div>
+    <div class="field mt-3">
+      <label for="usrCorreo">Correo Electrónico *</label>
+      <input id="usrCorreo" pInputText type="email" [(ngModel)]="nuevoUsuario.correo" name="correo" class="w-full" required />
+    </div>
 
-       </form>
-      <div class="modal-footer">
-      <button type="button" class="btn-guardar" (click)="guardarUsuario()">Guardar</button>
-      <button type="button" class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-</div>
-   </div>
-</div>
+    <div class="form-grid mt-3">
+      <div class="field">
+        <label for="usrPass">Contraseña {{ usuarioEditando ? '(Opcional)' : '*' }}</label>
+        <input id="usrPass" pInputText type="password" [(ngModel)]="nuevoUsuario.contrasena" name="contrasena" class="w-full" />
+      </div>
+      <div class="field">
+        <label for="usrConfirm">Confirmar Contraseña</label>
+        <input id="usrConfirm" pInputText type="password" [(ngModel)]="nuevoUsuario.confirmar" name="confirmar" class="w-full" />
+      </div>
+    </div>
 
+    <div class="form-grid mt-3">
+      <div class="field">
+        <label>Estado</label>
+        <p-select
+          [(ngModel)]="nuevoUsuario.estado"
+          [options]="opcionesEstado"
+          optionLabel="label"
+          optionValue="value"
+          name="estado"
+          appendTo="body"
+          class="w-full"
+        ></p-select>
+      </div>
+
+      <div class="field">
+        <label>Rol de Usuario</label>
+        <p-select
+          [(ngModel)]="nuevoUsuario.id_rol"
+          [options]="opcionesRol"
+          optionLabel="label"
+          optionValue="value"
+          name="id_rol"
+          appendTo="body"
+          class="w-full"
+        ></p-select>
+      </div>
+    </div>
+
+    <div class="modal-footer-custom mt-3">
+      <button 
+        type="submit" 
+        class="btn-guardar-custom"
+        [disabled]="!nuevoUsuario.nombres.trim() || !nuevoUsuario.correo.trim()"
+      >
+        Guardar
+      </button>
+      <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>
+    </div>
+  </form>
+</p-dialog>

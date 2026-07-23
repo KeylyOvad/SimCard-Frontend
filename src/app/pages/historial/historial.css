@@ -1,0 +1,134 @@
+/* Configuración del Modal */
+:host ::ng-deep .modal-historial-cens {
+  width: 90vw;
+  max-width: 920px;
+}
+
+:host ::ng-deep .modal-historial-cens .p-dialog-content {
+  background: #ffffff !important;
+  padding: 20px;
+  max-height: 70vh !important;
+}
+
+/* 1. Tarjeta principal con borde verde corporativo bien definido que encierra todo */
+.card-historial-item {
+  background: #ffffff;
+  border: 1.5px solid var(--cens-primary); /* Borde verde visible e institucional */
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* Header del reporte */
+.historial-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--cens-bg-light);
+  border: 1px solid var(--cens-border-light);
+  color: var(--cens-primary-dark);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* Grilla de cuadros pequeños */
+.historial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.grid-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.grid-item .label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b; /* Título secundario suave */
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* 2. Texto de los valores aclarado para reducir el peso visual */
+.grid-item .val {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #475569; /* Gris pizarra suave en lugar de negro/oscuro */
+  line-height: 1.3;
+}
+
+/* Tag de PrimeNG dentro de cuadros */
+:host ::ng-deep .grid-item .p-tag {
+  background: #e2e8f0 !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  font-size: 10.5px !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  width: fit-content !important;
+}
+
+/* Cajas de Observación y Motivo */
+.historial-obs-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.obs-card {
+  padding: 12px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.obs-card.reason-card {
+  background: var(--cens-bg-light);
+  border: 1px solid var(--cens-border-light);
+}
+
+.obs-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.obs-title.text-green {
+  color: var(--cens-primary-dark);
+}
+
+.obs-card p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: #475569; /* También aclarado */
+  line-height: 1.4;
+}
+
+/* Estado Vacío */
+.empty-historial {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.empty-historial i {
+  font-size: 36px;
+  margin-bottom: 12px;
+}

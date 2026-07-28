@@ -61,7 +61,7 @@ export class CargarExcelComponent {
     }
   }
 
-  // Métodos para permitir Arrastrar y Soltar (Drag & Drop)
+  // Métodos para permitir Arrastrar y Soltar (Drag y Drop)
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();

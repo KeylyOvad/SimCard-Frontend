@@ -61,9 +61,10 @@
         <p-iconfield iconPosition="left" class="search-field">
           <p-inputicon styleClass="pi pi-search"></p-inputicon>
           <input
+            #buscarInput
             pInputText
             type="text"
-            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+            (input)="dt.filterGlobal(buscarInput.value, 'contains')"
             placeholder="Buscar SIM..."
             class="w-full"
           />
@@ -83,7 +84,7 @@
             label="Reporte General"
             icon="pi pi-download"
             styleClass="p-button-warning"
-            (click)="generateReport()"
+            (onClick)="generateReport()"
           ></p-button>
 
           <p-button

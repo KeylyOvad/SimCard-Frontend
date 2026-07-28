@@ -35,13 +35,14 @@ import { SelectModule } from 'primeng/select';
   styleUrls: ['./usuarios.css']
 })
 export class UsuariosComponent implements OnInit {
+  private apiUrl = 'http://localhost:3000/api/usuarios';
+
   searchText = '';
   modalAbierto = false;
   usuarios: any[] = [];
   usuarioEditando: any = null;
   puedeModificar = false;
 
-  // Opciones para p-select (Estado y Rol)
   opcionesEstado = [
     { label: 'Activo', value: 'Activo' },
     { label: 'Inactivo', value: 'Inactivo' }
@@ -74,17 +75,15 @@ export class UsuariosComponent implements OnInit {
   }
 
   cargarUsuarios() {
-    this.http.get<any[]>('http://localhost:3000/api/usuarios').subscribe({
+    this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.usuarios = data.map((u) => {
-          const estadoFormateado = (u.estado === 1 || u.estado === '1' || u.estado === 'Activo') 
-            ? 'Activo' 
-            : 'Inactivo';
+          const esActivo = u.estado === 1 || u.estado === '1' || u.estado === 'Activo';
 
           return {
             ...u,
-            nombreCompleto: `${u.nombres} ${u.apellidos}`,
-            estado: estadoFormateado,
+            nombreCompleto: `${u.nombres || ''} ${u.apellidos || ''}`.trim(),
+            estado: esActivo ? 'Activo' : 'Inactivo',
             rolTexto: Number(u.id_rol) === 1 ? 'Administrador' : 'Usuario'
           };
         });
@@ -122,58 +121,81 @@ export class UsuariosComponent implements OnInit {
 
   eliminarUsuario(usuario: any) {
     if (!this.puedeModificar) return;
-    if (!confirm(`¿Eliminar a ${usuario.nombreCompleto}?`)) return;
+    if (!confirm(`¿Está seguro de inactivar o eliminar a ${usuario.nombreCompleto}?`)) return;
 
-    this.http.delete(`http://localhost:3000/api/usuarios/${usuario.id_usuario}`).subscribe({
+    this.http.delete(`${this.apiUrl}/${usuario.id_usuario}`).subscribe({
       next: () => this.cargarUsuarios(),
       error: (err) => {
-        const msg = err.error?.message || 'Error al eliminar usuario';
+        const msg = err.error?.message || 'No tienes permisos para realizar esta acción.';
         alert(msg);
       }
     });
   }
 
   guardarUsuario() {
-    if (!this.puedeModificar) return;
-    if (!this.nuevoUsuario.nombres || !this.nuevoUsuario.correo) {
-      alert('Completa los campos obligatorios');
+    if (!this.puedeModificar) {
+      alert('Acción no permitida.');
       return;
     }
 
-    const payload = {
-      nombres: this.nuevoUsuario.nombres,
-      apellidos: this.nuevoUsuario.apellidos,
-      correo: this.nuevoUsuario.correo,
-      contrasena: this.nuevoUsuario.contrasena,
-      estado: this.nuevoUsuario.estado,
+    const correoLimpio = this.nuevoUsuario.correo.trim().toLowerCase();
+    const nombresLimpios = this.nuevoUsuario.nombres.trim();
+
+    if (!nombresLimpios || !correoLimpio) {
+      alert('Completa los campos obligatorios (*).');
+      return;
+    }
+
+    // Convertimos el estado a valor numérico/booleano según requiera la base de datos
+    const estadoValor = this.nuevoUsuario.estado === 'Activo' ? 1 : 0;
+
+    const payload: any = {
+      nombres: nombresLimpios,
+      apellidos: this.nuevoUsuario.apellidos.trim(),
+      correo: correoLimpio,
+      estado: estadoValor,
       id_rol: Number(this.nuevoUsuario.id_rol)
     };
 
     if (!this.usuarioEditando) {
+      // --- CREACIÓN ---
+      if (!this.nuevoUsuario.contrasena) {
+        alert('La contraseña es obligatoria para nuevos usuarios.');
+        return;
+      }
+
       if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
-        alert('Las contraseñas no coinciden');
+        alert('Las contraseñas no coinciden.');
         return;
       }
 
-      this.http.post('http://localhost:3000/api/usuarios', payload).subscribe({
+      payload.contrasena = this.nuevoUsuario.contrasena;
+
+      this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarUsuarios();
           this.cerrarModal();
         },
-        error: (err) => alert(err.error?.message || 'Fallo inesperado al crear usuario.')
+        error: (err) => alert(err.error?.message || 'Error al crear el usuario.')
       });
+
     } else {
-      if (this.nuevoUsuario.contrasena.trim() !== '' && this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
-        alert('Las contraseñas no coinciden');
-        return;
+      // --- EDICIÓN ---
+      // Solo enviamos contraseña si el administrador decidió cambiarla
+      if (this.nuevoUsuario.contrasena.trim() !== '') {
+        if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
+          alert('Las contraseñas no coinciden.');
+          return;
+        }
+        payload.contrasena = this.nuevoUsuario.contrasena;
       }
 
-      this.http.put(`http://localhost:3000/api/usuarios/${this.usuarioEditando.id_usuario}`, payload).subscribe({
+      this.http.put(`${this.apiUrl}/${this.usuarioEditando.id_usuario}`, payload).subscribe({
         next: () => {
           this.cargarUsuarios();
           this.cerrarModal();
         },
-        error: (err) => alert(err.error?.message || 'Fallo inesperado al actualizar usuario.')
+        error: (err) => alert(err.error?.message || 'Error al actualizar el usuario.')
       });
     }
   }

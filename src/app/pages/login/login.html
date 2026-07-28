@@ -22,6 +22,11 @@
         placeholder="Contraseña" 
         class="custom-input" />
 
+      <!-- Mensaje de error discreto si falla el login -->
+      <div *ngIf="errorMessage" class="error-banner">
+        {{ errorMessage }}
+      </div>
+
       <button type="submit" class="btn-entrar" [disabled]="loading">
         ENTRAR
       </button>

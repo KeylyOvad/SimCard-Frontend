@@ -11,7 +11,7 @@
 
 
 .btn-guardar-custom:disabled {
-  background-color: #00b875 !important; /* Mismo verde oscuro habilitado */
+  background-color: #00b875 !important; 
   color: white !important;
   opacity: 1 !important;
   cursor: not-allowed;

@@ -14,6 +14,11 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+export interface DestinoItem {
+  id_destino?: number;
+  descripcion: string;
+}
+
 @Component({
   selector: 'app-destino',
   standalone: true,
@@ -33,12 +38,15 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrls: ['./destinos.css']
 })
 export class Destino implements OnInit {
-  modalAbierto = false;
-  destinos: any[] = [];
-  destinoEditando: any = null;
-  puedeModificar: boolean = false;
+  // Centralizamos la URL del backend aquí
+  private readonly apiUrl = 'http://localhost:3000/api/destinos';
 
-  nuevoDestino = { descripcion: '' };
+  modalAbierto = false;
+  destinos: DestinoItem[] = [];
+  destinoEditando: DestinoItem | null = null;
+  puedeModificar = false;
+
+  nuevoDestino: DestinoItem = { descripcion: '' };
 
   constructor(
     private http: HttpClient,
@@ -52,21 +60,19 @@ export class Destino implements OnInit {
   }
 
   cargarDestinos() {
-    this.http.get<any[]>('http://localhost:3000/api/destinos')
-      .subscribe({
-        next: (data) => {
-          this.destinos = data;
-          this.cd.detectChanges();
-        },
-        error: (err) => console.error('Error al cargar destinos:', err)
-      });
+    this.http.get<DestinoItem[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.destinos = data;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar destinos:', err)
+    });
   }
 
   abrirModal() {
     if (!this.puedeModificar) return;
+    this.resetForm();
     this.modalAbierto = true;
-    this.nuevoDestino = { descripcion: '' };
-    this.destinoEditando = null;
   }
 
   cerrarModal() {
@@ -74,54 +80,60 @@ export class Destino implements OnInit {
     this.resetForm();
   }
 
-  editarDestino(dest: any) {
+  editarDestino(dest: DestinoItem) {
     if (!this.puedeModificar) return;
     this.destinoEditando = dest;
     this.nuevoDestino = { descripcion: dest.descripcion };
     this.modalAbierto = true;
   }
 
-  eliminarDestino(dest: any) {
-    if (!this.puedeModificar) return;
+  eliminarDestino(dest: DestinoItem) {
+    if (!this.puedeModificar || !dest.id_destino) return;
     if (!confirm(`¿Eliminar el destino: ${dest.descripcion}?`)) return;
 
-    this.http.delete(`http://localhost:3000/api/destinos/${dest.id_destino}`)
-      .subscribe({
-        next: () => this.cargarDestinos(),
-        error: (err) => {
-          console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al eliminar destino';
-          alert(msg);
-        }
-      });
+    this.http.delete(`${this.apiUrl}/${dest.id_destino}`).subscribe({
+      next: () => this.cargarDestinos(),
+      error: (err) => {
+        console.error(err);
+        const msg = err.error?.message || 'Error al eliminar destino';
+        alert(msg);
+      }
+    });
   }
 
   guardarDestino() {
     if (!this.puedeModificar) return;
-    if (!this.nuevoDestino.descripcion.trim()) {
+
+    const descLimpia = this.nuevoDestino.descripcion.trim();
+    if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
+    const payload = { descripcion: descLimpia };
+
     if (!this.destinoEditando) {
-      this.http.post('http://localhost:3000/api/destinos', this.nuevoDestino)
-        .subscribe({
-          next: () => { this.cargarDestinos(); this.cerrarModal(); },
-          error: (err) => {
-            console.error(err);
-            const msg = err.error && err.error.message ? err.error.message : 'Error al crear destino';
-            alert(msg);
-          }
-        });
-    } else {
-      this.http.put(
-        `http://localhost:3000/api/destinos/${this.destinoEditando.id_destino}`,
-        this.nuevoDestino
-      ).subscribe({
-        next: () => { this.cargarDestinos(); this.cerrarModal(); },
+      this.http.post(this.apiUrl, payload).subscribe({
+        next: () => {
+          this.cargarDestinos();
+          this.cerrarModal();
+        },
         error: (err) => {
           console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al actualizar destino';
+          const msg = err.error?.message || 'Error al crear destino';
+          alert(msg);
+        }
+      });
+    } else {
+      const id = this.destinoEditando.id_destino;
+      this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
+        next: () => {
+          this.cargarDestinos();
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error(err);
+          const msg = err.error?.message || 'Error al actualizar destino';
           alert(msg);
         }
       });

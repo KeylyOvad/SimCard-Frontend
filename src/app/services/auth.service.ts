@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,22 +10,29 @@ export class AuthService {
   
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, {
       correo: email,
       password: password
     });
   }
 
-  setToken(token: string) {
+  // --- Manejo del Token ---
+  setToken(token: string): void {
     localStorage.setItem('token', token);
   }
 
-  getToken() {
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  setRol(id_rol: number) {
+  // Verificar si existe una sesión activa
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  // --- Manejo de Rol ---
+  setRol(id_rol: number): void {
     localStorage.setItem('id_rol', id_rol.toString());
   }
 
@@ -33,28 +41,29 @@ export class AuthService {
     return rol ? parseInt(rol, 10) : 2; 
   }
 
- 
-  setNombre(nombre: string) {
+  esAdmin(): boolean {
+    return this.getRol() === 1;
+  }
+
+  // --- Manejo de Nombre de Usuario ---
+  setNombre(nombre: string): void {
     localStorage.setItem('user_name', nombre);
   }
 
   getNombre(): string {
     return localStorage.getItem('user_name') || 'Usuario';
   }
- 
 
-  esAdmin(): boolean {
-    return this.getRol() === 1;
-  }
-
-  logout() {
+  // --- Cierre de Sesión ---
+  logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('id_rol');
-    localStorage.removeItem('user_name'); 
+    localStorage.removeItem('user_name');
   }
 
-  getUser() {
-    return this.http.get('http://localhost:3000/api/auth/me', {
+  // --- Perfil del Usuario Autenticado ---
+  getUser(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/me`, {
       headers: {
         Authorization: `Bearer ${this.getToken()}`
       }

@@ -12,9 +12,8 @@ import { Destino } from './pages/parametros/destinos/destinos';
 import { Responsables } from './pages/parametros/responsables/responsables';
 import { Estado } from './pages/parametros/estados/estados';
 import { TipoSim } from './pages/parametros/simcard/simcard';
-import { SimForm } from './pages/sim-form/sim-form'
+import { SimForm } from './pages/sim-form/sim-form';
 import { CargarExcelComponent } from './pages/cargar-excel/cargar-excel';
-
 
 export const routes: Routes = [
   {
@@ -36,35 +35,72 @@ export const routes: Routes = [
     component: UsuariosComponent,
     canActivate: [AuthGuard]   
   },
- {
-  path: 'parametros',
-  component: Parametros,
-  canActivate: [AuthGuard]
-},
-{ path: 'parametros/operadores', component: Operadores },
-{ path: 'parametros/planes', component: Planes},
-{ path: 'parametros/simcard', component: TipoSim },
-{ path: 'parametros/capacidad', component: Capacidad },
-{ path: 'parametros/ubicaciones', component: Ubicaciones},
-{ path: 'parametros/destinos', component: Destino},
-{ path: 'parametros/responsables', component: Responsables },
-{ path: 'parametros/estados', component: Estado },
-
-{
-  path: 'sim-form',
-  component: SimForm,
-  canActivate: [AuthGuard]
-},
-
-{
+  {
+    path: 'parametros',
+    component: Parametros,
+    canActivate: [AuthGuard]
+  },
+  // Subrutas de parámetros (ahora todas protegidas ✅)
+  { 
+    path: 'parametros/operadores', 
+    component: Operadores, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/planes', 
+    component: Planes, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/simcard', 
+    component: TipoSim, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/capacidad', 
+    component: Capacidad, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/ubicaciones', 
+    component: Ubicaciones, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/destinos', 
+    component: Destino, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/responsables', 
+    component: Responsables, 
+    canActivate: [AuthGuard] 
+  },
+  { 
+    path: 'parametros/estados', 
+    component: Estado, 
+    canActivate: [AuthGuard] 
+  },
+  // Formulario SIM
+  {
+    path: 'sim-form',
+    component: SimForm,
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'sim-form/:id',
     component: SimForm,
     canActivate: [AuthGuard]
   },
-
- {
+  // Carga masiva
+  {
     path: 'cargar-excel',
     component: CargarExcelComponent,
     canActivate: [AuthGuard]
+  },
+  // Comodín para redirigir rutas no encontradas al login
+  {
+    path: '**',
+    redirectTo: 'login'
   }
 ];

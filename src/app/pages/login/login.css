@@ -79,3 +79,13 @@
 .btn-entrar:active {
   transform: translateY(0);
 }
+
+.error-banner {
+  background-color: #ffebe9;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+  padding: 0.6rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}

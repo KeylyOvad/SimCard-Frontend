@@ -1,7 +1,6 @@
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Título principal -->
   <header class="page-header">
     <h1>Gestión de Estados</h1>
     <p>Administración de estados de SIM Cards</p>
@@ -18,11 +17,11 @@
     [showGridlines]="true"
     styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
   >
-    <!-- Buscador y botón Agregar -->
+    <!-- Buscador + botón Agregar -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
         <p-iconfield iconPosition="left" class="search-field">
-          <p-inputicon styleClass="pi pi-search" />
+          <p-inputicon styleClass="pi pi-search"></p-inputicon>
           <input
             pInputText
             type="text"
@@ -42,18 +41,16 @@
       </div>
     </ng-template>
 
-    <!-- Encabezados alineados al estándar del proyecto -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 15%;" class="text-center">ID</th>
         <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
-          Descripción <p-sortIcon field="descripcion" />
+          Descripción <p-sortIcon field="descripcion"></p-sortIcon>
         </th>
         <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
       </tr>
     </ng-template>
 
-    <!-- Filas -->
     <ng-template pTemplate="body" let-est let-rowIndex="rowIndex">
       <tr>
         <td class="text-center">{{ est.id_estado || (rowIndex + 1) }}</td>

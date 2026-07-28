@@ -13,25 +13,67 @@ export class SimService {
 
   constructor(private http: HttpClient) {}
 
+  // --- Métodos CRUD para Sims ---
+
   getSims(): Observable<Sim[]> {
     return this.http.get<Sim[]>(this.apiUrl);
-  }
-
-  deleteSim(id: any): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   getSimById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
+  createSim(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data);
+  }
+
   updateSim(id: any, data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, data);
+  }
+
+  deleteSim(id: any): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   getHistorial(id: any): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${id}/historial`);
   }
+
+  // --- Métodos para Selects (Auxiliares) ---
+
+  getOperadores(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/operadores`);
+  }
+
+  getPlanes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/planes`);
+  }
+
+  getCapacidades(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/capacidad`);
+  }
+
+  getEstados(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/estados`);
+  }
+
+  getTiposSim(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/tiposim`);
+  }
+
+  getResponsables(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/responsables`);
+  }
+
+  getUbicaciones(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/ubicaciones`);
+  }
+
+  getDestinos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/destinos`);
+  }
+
+  // --- Importación y Reportes ---
 
   importarExcel(formData: FormData): Observable<any> {
     const token = localStorage.getItem('token'); 

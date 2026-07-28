@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; 
 import { AuthService } from '../../services/auth.service';
 
-// Importaciones de PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -31,6 +30,7 @@ export class Login {
   email = '';
   password = '';
   loading = false;
+  errorMessage = '';
 
   constructor(
     private router: Router,
@@ -38,7 +38,10 @@ export class Login {
   ) {}
 
   onLogin() {
+    this.errorMessage = '';
+
     if (!this.email || !this.password) {
+      this.errorMessage = 'Ingresa tu correo y contraseña.';
       return;
     }
 
@@ -54,22 +57,17 @@ export class Login {
           this.authService.setRol(res.id_rol); 
         }
 
-        if (res.nombre) {
-          this.authService.setNombre(res.nombre);
-        } else if (res.usuario && res.usuario.nombre) {
-          this.authService.setNombre(res.usuario.nombre);
-        } else {
-          this.authService.setNombre('Usuario'); 
-        }
-
         this.router.navigate(['/home']);
       },
       error: (err) => {
         this.loading = false;
-        console.error('ERROR AUTENTICACIÓN:', err);
+        this.password = ''; // Limpia la contraseña al fallar
 
-        const mensaje = err.error?.message || 'Error de comunicación con el servidor.';
-        alert(`⚠️ ${mensaje}`);
+        if (err.status === 401 || err.status === 400) {
+          this.errorMessage = 'Correo o contraseña incorrectos.';
+        } else {
+          this.errorMessage = 'Error de conexión con el servidor.';
+        }
       }
     });
   }

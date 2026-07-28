@@ -25,7 +25,6 @@
           <span><i class="pi pi-user"></i> MODIFICADO POR: <strong>{{ h.nombres }} {{ h.apellidos }}</strong></span>
         </div>
 
-        <!-- Grilla con Cuadros por Dato -->
         <div class="historial-grid">
           <div class="grid-item">
             <span class="label">Número SIM</span>
@@ -100,7 +99,7 @@
 
     </div>
 
-    <!-- Estado sin datos -->
+  
     <ng-template #noHistory>
       <div class="empty-historial">
         <i class="pi pi-history"></i>
@@ -110,7 +109,6 @@
     </ng-template>
   </div>
 
-  <!-- Pie del Modal -->
   <ng-template pTemplate="footer">
     <div class="modal-footer-custom">
       <button class="btn-guardar-custom" (click)="cerrarModal()">

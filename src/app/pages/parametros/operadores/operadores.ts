@@ -14,6 +14,11 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+export interface OperadorItem {
+  id_operador?: number;
+  descripcion: string;
+}
+
 @Component({
   selector: 'app-operadores',
   standalone: true,
@@ -33,14 +38,14 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrls: ['./operadores.css']
 })
 export class Operadores implements OnInit {
-  modalAbierto = false;
-  operadores: any[] = [];
-  operadorEditando: any = null;
-  puedeModificar: boolean = false;
+  private readonly apiUrl = 'http://localhost:3000/api/operadores';
 
-  nuevoOperador = {
-    descripcion: ''
-  };
+  modalAbierto = false;
+  operadores: OperadorItem[] = [];
+  operadorEditando: OperadorItem | null = null;
+  puedeModificar = false;
+
+  nuevoOperador: OperadorItem = { descripcion: '' };
 
   constructor(
     private http: HttpClient,
@@ -50,28 +55,25 @@ export class Operadores implements OnInit {
 
   ngOnInit() {
     this.puedeModificar = this.authService.esAdmin();
-    console.log('¿Este usuario tiene permisos en la sección de operadores?:', this.puedeModificar);
     this.cargarOperadores();
   }
 
   cargarOperadores() {
-    this.http.get<any[]>('http://localhost:3000/api/operadores')
-      .subscribe({
-        next: (data) => {
-          this.operadores = data;
-          this.cd.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al cargar operadores:', err);
-        }
-      });
+    this.http.get<OperadorItem[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.operadores = data;
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar operadores:', err);
+      }
+    });
   }
 
   abrirModal() {
     if (!this.puedeModificar) return; 
+    this.resetForm();
     this.modalAbierto = true;
-    this.nuevoOperador = { descripcion: '' };
-    this.operadorEditando = null;
   }
 
   cerrarModal() {
@@ -79,63 +81,60 @@ export class Operadores implements OnInit {
     this.resetForm();
   }
 
-  editarOperador(operador: any) {
+  editarOperador(operador: OperadorItem) {
     if (!this.puedeModificar) return; 
     this.operadorEditando = operador;
     this.nuevoOperador = { descripcion: operador.descripcion };
     this.modalAbierto = true;
   }
 
-  eliminarOperador(operador: any) {
-    if (!this.puedeModificar) return; 
-    const confirmar = confirm(`¿Eliminar operador: ${operador.descripcion}?`);
-    if (!confirmar) return;
+  eliminarOperador(operador: OperadorItem) {
+    if (!this.puedeModificar || !operador.id_operador) return; 
+    if (!confirm(`¿Eliminar operador: ${operador.descripcion}?`)) return;
 
-    this.http.delete(`http://localhost:3000/api/operadores/${operador.id_operador}`)
-      .subscribe({
-        next: () => {
-          this.cargarOperadores();
-        },
-        error: (err) => {
-          console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al eliminar operador';
-          alert(msg);
-        }
-      });
+    this.http.delete(`${this.apiUrl}/${operador.id_operador}`).subscribe({
+      next: () => this.cargarOperadores(),
+      error: (err) => {
+        console.error(err);
+        const msg = err.error?.message || 'Error al eliminar operador';
+        alert(msg);
+      }
+    });
   }
 
   guardarOperador() {
     if (!this.puedeModificar) return; 
-    if (!this.nuevoOperador.descripcion.trim()) {
+
+    const descLimpia = this.nuevoOperador.descripcion.trim();
+    if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
+    const payload = { descripcion: descLimpia };
+
     if (!this.operadorEditando) {
-      this.http.post('http://localhost:3000/api/operadores', this.nuevoOperador)
-        .subscribe({
-          next: () => {
-            this.cargarOperadores();
-            this.cerrarModal();
-          },
-          error: (err) => {
-            console.error(err);
-            const msg = err.error && err.error.message ? err.error.message : 'Error al crear operador';
-            alert(msg);
-          }
-        });
-    } else {
-      this.http.put(
-        `http://localhost:3000/api/operadores/${this.operadorEditando.id_operador}`,
-        this.nuevoOperador
-      ).subscribe({
+      this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarOperadores();
           this.cerrarModal();
         },
         error: (err) => {
           console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al actualizar operador';
+          const msg = err.error?.message || 'Error al crear operador';
+          alert(msg);
+        }
+      });
+    } else {
+      const id = this.operadorEditando.id_operador;
+      this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
+        next: () => {
+          this.cargarOperadores();
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error(err);
+          const msg = err.error?.message || 'Error al actualizar operador';
           alert(msg);
         }
       });

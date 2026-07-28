@@ -1,4 +1,4 @@
-/* --- TARJETA DE CARGA Y DROPZONE --- */
+
 .upload-card {
   background: #ffffff;
   padding: 28px;
@@ -61,7 +61,6 @@
   color: #94a3b8;
 }
 
-/* --- BADGE DE ARCHIVO SELECCIONADO --- */
 .selected-file-badge {
   display: flex;
   align-items: center;
@@ -87,7 +86,7 @@
   justify-content: center;
 }
 
-/* --- ESTADO DE CARGA & RESULTADOS --- */
+/*ESTADO DE CARGA & RESULTADOS */
 .loading-container {
   margin-top: 24px;
   text-align: center;

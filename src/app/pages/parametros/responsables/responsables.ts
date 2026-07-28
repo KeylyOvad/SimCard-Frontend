@@ -14,6 +14,11 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+export interface ResponsableItem {
+  id_responsable?: number;
+  descripcion: string;
+}
+
 @Component({
   selector: 'app-responsable',
   standalone: true,
@@ -33,12 +38,14 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrls: ['./responsables.css']
 })
 export class Responsables implements OnInit {
-  modalAbierto = false;
-  responsables: any[] = [];
-  responsableEditando: any = null;
-  puedeModificar: boolean = false;
+  private readonly apiUrl = 'http://localhost:3000/api/responsables';
 
-  nuevoResponsable = { descripcion: '' };
+  modalAbierto = false;
+  responsables: ResponsableItem[] = [];
+  responsableEditando: ResponsableItem | null = null;
+  puedeModificar = false;
+
+  nuevoResponsable: ResponsableItem = { descripcion: '' };
 
   constructor(
     private http: HttpClient, 
@@ -48,26 +55,23 @@ export class Responsables implements OnInit {
 
   ngOnInit() {
     this.puedeModificar = this.authService.esAdmin();
-    console.log('¿Este usuario tiene permisos en la sección de responsables?:', this.puedeModificar);
     this.cargarResponsables();
   }
 
   cargarResponsables() {
-    this.http.get<any[]>('http://localhost:3000/api/responsables')
-      .subscribe({
-        next: (data) => {
-          this.responsables = data;
-          this.cd.detectChanges();
-        },
-        error: (err) => console.error('Error al cargar responsables:', err)
-      });
+    this.http.get<ResponsableItem[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        this.responsables = data;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar responsables:', err)
+    });
   }
 
   abrirModal() {
     if (!this.puedeModificar) return; 
+    this.resetForm();
     this.modalAbierto = true;
-    this.nuevoResponsable = { descripcion: '' };
-    this.responsableEditando = null;
   }
 
   cerrarModal() {
@@ -75,54 +79,60 @@ export class Responsables implements OnInit {
     this.resetForm();
   }
 
-  editarResponsable(resp: any) {
+  editarResponsable(resp: ResponsableItem) {
     if (!this.puedeModificar) return; 
     this.responsableEditando = resp;
     this.nuevoResponsable = { descripcion: resp.descripcion };
     this.modalAbierto = true;
   }
 
-  eliminarResponsable(resp: any) {
-    if (!this.puedeModificar) return; 
+  eliminarResponsable(resp: ResponsableItem) {
+    if (!this.puedeModificar || !resp.id_responsable) return; 
     if (!confirm(`¿Eliminar al responsable: ${resp.descripcion}?`)) return;
 
-    this.http.delete(`http://localhost:3000/api/responsables/${resp.id_responsable}`)
-      .subscribe({
-        next: () => this.cargarResponsables(),
-        error: (err) => {
-          console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al eliminar responsable';
-          alert(msg);
-        }
-      });
+    this.http.delete(`${this.apiUrl}/${resp.id_responsable}`).subscribe({
+      next: () => this.cargarResponsables(),
+      error: (err) => {
+        console.error(err);
+        const msg = err.error?.message || 'Error al eliminar responsable';
+        alert(msg);
+      }
+    });
   }
 
   guardarResponsable() {
     if (!this.puedeModificar) return; 
-    if (!this.nuevoResponsable.descripcion.trim()) {
+
+    const descLimpia = this.nuevoResponsable.descripcion.trim();
+    if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
+    const payload = { descripcion: descLimpia };
+
     if (!this.responsableEditando) {
-      this.http.post('http://localhost:3000/api/responsables', this.nuevoResponsable)
-        .subscribe({
-          next: () => { this.cargarResponsables(); this.cerrarModal(); },
-          error: (err) => {
-            console.error(err);
-            const msg = err.error && err.error.message ? err.error.message : 'Error al crear responsable';
-            alert(msg);
-          }
-        });
-    } else {
-      this.http.put(
-        `http://localhost:3000/api/responsables/${this.responsableEditando.id_responsable}`,
-        this.nuevoResponsable
-      ).subscribe({
-        next: () => { this.cargarResponsables(); this.cerrarModal(); },
+      this.http.post(this.apiUrl, payload).subscribe({
+        next: () => { 
+          this.cargarResponsables(); 
+          this.cerrarModal(); 
+        },
         error: (err) => {
           console.error(err);
-          const msg = err.error && err.error.message ? err.error.message : 'Error al actualizar responsable';
+          const msg = err.error?.message || 'Error al crear responsable';
+          alert(msg);
+        }
+      });
+    } else {
+      const id = this.responsableEditando.id_responsable;
+      this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
+        next: () => { 
+          this.cargarResponsables(); 
+          this.cerrarModal(); 
+        },
+        error: (err) => {
+          console.error(err);
+          const msg = err.error?.message || 'Error al actualizar responsable';
           alert(msg);
         }
       });

@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
 import { Header } from '../../shared/header/header';
+import { SimService } from '../../services/sim.service';
 
 @Component({
   selector: 'app-sim-form',
@@ -14,16 +15,16 @@ import { Header } from '../../shared/header/header';
   styleUrls: ['./sim-form.css']
 })
 export class SimForm implements OnInit {
-  sim: any = {};
+  sim: Record<string, any> = {};
   nuevaIp = '';
   nuevoApn = '';
   data$!: Observable<any>;
   
-  isEdit: boolean = false;
+  isEdit = false;
   idSim: string | null = null;
 
   constructor(
-    private http: HttpClient, 
+    private simService: SimService,
     private router: Router,
     private route: ActivatedRoute 
   ) {}
@@ -32,6 +33,7 @@ export class SimForm implements OnInit {
     this.resetForm();
     this.cargarSelects();
     this.idSim = this.route.snapshot.paramMap.get('id');
+    
     if (this.idSim) {
       this.isEdit = true;
       this.cargarDatosSim(this.idSim);
@@ -40,8 +42,8 @@ export class SimForm implements OnInit {
     }
   }
 
-  cargarDatosSim(id: string) {
-    this.http.get(`http://localhost:3000/api/sims/${id}`).subscribe({
+  cargarDatosSim(id: string): void {
+    this.simService.getSimById(id).subscribe({
       next: (data: any) => {
         this.sim = {
           ...data, 
@@ -67,7 +69,7 @@ export class SimForm implements OnInit {
     });
   }
 
-  resetForm() {
+  resetForm(): void {
     this.sim = {
       numeroSim: '', 
       numeroLinea: '', 
@@ -90,88 +92,80 @@ export class SimForm implements OnInit {
     this.nuevoApn = '';
   }
 
-  cargarSelects() {
+  cargarSelects(): void {
     this.data$ = forkJoin({
-      operadores: this.http.get('http://localhost:3000/api/operadores'),
-      planes: this.http.get('http://localhost:3000/api/planes'),
-      capacidades: this.http.get('http://localhost:3000/api/capacidad'),
-      estados: this.http.get('http://localhost:3000/api/estados'),
-      tiposSim: this.http.get('http://localhost:3000/api/tiposim'),
-      responsables: this.http.get('http://localhost:3000/api/responsables'),
-      ubicaciones: this.http.get('http://localhost:3000/api/ubicaciones'),
-      destinos: this.http.get('http://localhost:3000/api/destinos')
+      operadores: this.simService.getOperadores(),
+      planes: this.simService.getPlanes(),
+      capacidades: this.simService.getCapacidades(),
+      estados: this.simService.getEstados(),
+      tiposSim: this.simService.getTiposSim(),
+      responsables: this.simService.getResponsables(),
+      ubicaciones: this.simService.getUbicaciones(),
+      destinos: this.simService.getDestinos()
     });
   }
 
-  // --- VALIDACIÓN Y ADICIÓN DE IP ---
-  agregarIp() {
+  agregarIp(): void {
     const ipLimpia = this.nuevaIp.trim();
-
     if (!ipLimpia) return;
 
-    // RegEx para formato IPv4 (0.0.0.0 a 255.255.255.255)
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
     if (!ipRegex.test(ipLimpia)) {
-      alert(`⚠️ La IP "${ipLimpia}" no tiene un formato válido (ejemplo: 192.168.1.10).`);
+      alert(`⚠️ La IP "${ipLimpia}" no tiene un formato válido.`);
       return;
     }
 
-    if (!this.sim.ip) this.sim.ip = [];
-
-    if (this.sim.ip.includes(ipLimpia)) {
-      alert(`⚠️ La dirección IP "${ipLimpia}" ya está agregada en la lista.`);
+    if (!this.sim['ip']) this.sim['ip'] = [];
+    if (this.sim['ip'].includes(ipLimpia)) {
+      alert(`⚠️ La dirección IP "${ipLimpia}" ya está agregada.`);
       return;
     }
 
-    this.sim.ip.push(ipLimpia);
+    this.sim['ip'].push(ipLimpia);
     this.nuevaIp = '';
   }
 
-  // --- VALIDACIÓN Y ADICIÓN DE APN ---
-  agregarApn() {
+  agregarApn(): void {
     const apnLimpio = this.nuevoApn.trim();
-
     if (!apnLimpio) return;
 
-    // RegEx estándar para dominios o nombres APN (ej: internet.com, movistar.pe)
     const apnRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9.-]+$/;
 
     if (!apnRegex.test(apnLimpio)) {
-      alert(`⚠️ El APN "${apnLimpio}" no tiene un formato válido (ejemplo: internet.com).`);
+      alert(`⚠️ El APN "${apnLimpio}" no tiene un formato válido.`);
       return;
     }
 
-    if (!this.sim.apn) this.sim.apn = [];
-
-    if (this.sim.apn.includes(apnLimpio)) {
-      alert(`⚠️ El APN "${apnLimpio}" ya está agregado en la lista.`);
+    if (!this.sim['apn']) this.sim['apn'] = [];
+    if (this.sim['apn'].includes(apnLimpio)) {
+      alert(`⚠️ El APN "${apnLimpio}" ya está agregado.`);
       return;
     }
 
-    this.sim.apn.push(apnLimpio);
+    this.sim['apn'].push(apnLimpio);
     this.nuevoApn = '';
   }
 
-  eliminarIp(index: number) { this.sim.ip.splice(index, 1); }
-  eliminarApn(index: number) { this.sim.apn.splice(index, 1); }
+  eliminarIp(index: number): void { 
+    if (this.sim['ip']) this.sim['ip'].splice(index, 1); 
+  }
+  
+  eliminarApn(index: number): void { 
+    if (this.sim['apn']) this.sim['apn'].splice(index, 1); 
+  }
 
-  guardar() {
-    if (this.isEdit && (!this.sim.razonModificacion || this.sim.razonModificacion.trim().length < 5)) {
+  guardar(): void {
+    if (this.isEdit && (!this.sim['razonModificacion'] || this.sim['razonModificacion'].trim().length < 5)) {
       alert("⚠️ Debes ingresar una razón para la modificación (mínimo 5 caracteres).");
       return;
     }
 
-    let pinVal = this.sim.pin ? this.sim.pin.toString().trim() : '';
-    let pukVal = this.sim.puk ? this.sim.puk.toString().trim() : '';
+    let pinVal = this.sim['pin'] ? this.sim['pin'].toString().trim() : '';
+    let pukVal = this.sim['puk'] ? this.sim['puk'].toString().trim() : '';
 
-    if (pinVal === '') {
-      pinVal = '0000'; 
-    }
-    
-    if (pukVal === '') {
-      pukVal = '00000000'; 
-    }
+    if (pinVal === '') pinVal = '0000'; 
+    if (pukVal === '') pukVal = '00000000'; 
   
     if (pinVal !== '0' && pinVal !== '0000' && pinVal.length !== 4) {
       alert("⚠️ El PIN debe tener 4 dígitos.");
@@ -182,11 +176,11 @@ export class SimForm implements OnInit {
       return;
     }
 
-    this.sim.pin = pinVal;
-    this.sim.puk = pukVal;
+    this.sim['pin'] = pinVal;
+    this.sim['puk'] = pukVal;
 
-    if (this.isEdit) {
-      this.http.put(`http://localhost:3000/api/sims/${this.idSim}`, this.sim).subscribe({
+    if (this.isEdit && this.idSim) {
+      this.simService.updateSim(this.idSim, this.sim).subscribe({
         next: () => {
           alert("✅ SIM actualizada e historial registrado correctamente");
           this.router.navigate(['/home']);
@@ -198,7 +192,7 @@ export class SimForm implements OnInit {
         }
       });
     } else {
-      this.http.post('http://localhost:3000/api/sims', this.sim).subscribe({
+      this.simService.createSim(this.sim).subscribe({
         next: () => {
           alert("✅ SIM registrada correctamente");
           this.router.navigate(['/home']);
@@ -212,7 +206,7 @@ export class SimForm implements OnInit {
     }
   }
 
-  cancelar() {
+  cancelar(): void {
     this.router.navigate(['/home']); 
   }
 }

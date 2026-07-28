@@ -10,10 +10,10 @@
   max-height: 70vh !important;
 }
 
-/* 1. Tarjeta principal con borde verde corporativo bien definido que encierra todo */
+/*Tarjeta principal con borde verde */
 .card-historial-item {
   background: #ffffff;
-  border: 1.5px solid var(--cens-primary); /* Borde verde visible e institucional */
+  border: 1.5px solid var(--cens-primary); 
   border-radius: 12px;
   padding: 18px;
   margin-bottom: 20px;
@@ -35,7 +35,6 @@
   margin-bottom: 16px;
 }
 
-/* Grilla de cuadros pequeños */
 .historial-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -57,16 +56,15 @@
 .grid-item .label {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b; /* Título secundario suave */
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
 
-/* 2. Texto de los valores aclarado para reducir el peso visual */
 .grid-item .val {
   font-size: 13.5px;
   font-weight: 500;
-  color: #475569; /* Gris pizarra suave en lugar de negro/oscuro */
+  color: #475569; 
   line-height: 1.3;
 }
 
@@ -117,7 +115,7 @@
   margin: 0;
   font-size: 13px;
   font-weight: 400;
-  color: #475569; /* También aclarado */
+  color: #475569; 
   line-height: 1.4;
 }
 

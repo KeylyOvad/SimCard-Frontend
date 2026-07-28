@@ -1,4 +1,4 @@
-/* Layout Principal y Card */
+/* Layout Principal */
 .container {
   padding: 30px;
   background-color: #f3f4f6;
@@ -19,7 +19,7 @@
 
 /* Encabezado */
 .form-header {
-  background: #00b875; /* Verde vivo */
+  background: #00b875; 
   color: white;
   padding: 16px 25px;
 }
@@ -30,14 +30,14 @@ form { padding: 25px; }
 h3 {
   font-size: 11px;
   font-weight: 800;
-  color: #00b875; /* Verde vivo */
+  color: #00b875; 
   text-transform: uppercase;
   border-bottom: 2px solid #f1f5f9;
   padding-bottom: 6px;
   margin: 25px 0 15px;
 }
 
-/* Grillas */
+
 .grid-main, .grid-2 {
   display: grid;
   gap: 15px 20px;
@@ -72,7 +72,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(0, 184, 117, 0.15);
 }
 
-/* Filas de IP/APN y Tags */
+/* Filas de IP/APN */
 .row-inline { display: flex; gap: 10px; align-items: center; }
 .input-dynamic { flex: 1; }
 
@@ -94,7 +94,6 @@ input:focus, select:focus, textarea:focus {
 }
 .tag i { cursor: pointer; color: #ef4444; font-weight: bold; font-style: normal; }
 
-/* Pie de formulario y Botones redondeados */
 .form-footer { margin-top: 30px; display: flex; justify-content: center; gap: 15px; }
 
 .btn-guardar, .btn-cancelar {
@@ -108,7 +107,6 @@ input:focus, select:focus, textarea:focus {
 .btn-cancelar { background: #ef4444; color: white; }
 .btn-cancelar:hover { background: #dc2626; }
 
-/* Movil */
 @media (max-width: 768px) {
   .grid-main, .grid-2 { grid-template-columns: 1fr; }
   .form-footer { flex-direction: column; }

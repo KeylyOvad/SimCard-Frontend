@@ -6,72 +6,82 @@
       <h2>{{ isEdit ? '📝 Modificar Sim Card' : '📱 Agregar Sim Card' }}</h2>
     </div>
 
-    <form #form="ngForm" novalidate>
+    <form #form="ngForm" (ngSubmit)="guardar()" novalidate>
       <h3>Detalles de Sim</h3>
       
       <div class="grid-main">
         <div class="field-group">
           <label>Número de sim</label>
-          <input [(ngModel)]="sim.numeroSim" name="numeroSim" placeholder="Ingrese número" autocomplete="off">
+          <input [(ngModel)]="sim['numeroSim']" name="numeroSim" placeholder="Ingrese número" autocomplete="off" required>
         </div>
 
         <div class="field-group">
           <label>Número de Línea</label>
-          <input [(ngModel)]="sim.numeroLinea" name="numeroLinea" placeholder="Ingrese línea" autocomplete="off">
+          <input [(ngModel)]="sim['numeroLinea']" name="numeroLinea" placeholder="Ingrese línea" autocomplete="off" required>
         </div>
 
         <div class="field-group">
           <label>PIN</label>
-          <input [(ngModel)]="sim.pin" name="pin" placeholder="0000" maxlength="4" autocomplete="off">
+          <input [(ngModel)]="sim['pin']" name="pin" placeholder="0000" maxlength="4" autocomplete="off">
         </div>
 
         <div class="field-group">
           <label>PUK</label>
-          <input [(ngModel)]="sim.puk" name="puk" placeholder="00000000" maxlength="8" autocomplete="off">
+          <input [(ngModel)]="sim['puk']" name="puk" placeholder="00000000" maxlength="8" autocomplete="off">
         </div>
         
         <div class="field-group">
           <label>Tipo de Sim</label>
-          <select [(ngModel)]="sim.tipoSimId" name="tipoSimId">
+          <select [(ngModel)]="sim['tipoSimId']" name="tipoSimId">
             <option value="">VACIO</option>
-            <option *ngFor="let t of data.tiposSim" [value]="t.id_tiposim">{{ t.descripcion }}</option>
+            <option *ngFor="let t of data.tiposSim" [value]="t.id_tiposim">
+              {{ t.nombre_tiposim || t.descripcion || t.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Operador</label>
-          <select [(ngModel)]="sim.operadorId" name="operadorId">
+          <select [(ngModel)]="sim['operadorId']" name="operadorId">
             <option value="">VACIO</option>
-            <option *ngFor="let o of data.operadores" [value]="o.id_operador">{{ o.descripcion }}</option>
+            <option *ngFor="let o of data.operadores" [value]="o.id_operador">
+              {{ o.nombre_operador || o.descripcion || o.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Plan</label>
-          <select [(ngModel)]="sim.planId" name="planId">
+          <select [(ngModel)]="sim['planId']" name="planId">
             <option value="">VACIO</option>
-            <option *ngFor="let p of data.planes" [value]="p.id_plan">{{ p.descripcion }}</option>
+            <option *ngFor="let p of data.planes" [value]="p.id_plan">
+              {{ p.nombre_plan || p.descripcion || p.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Capacidad</label>
-          <select [(ngModel)]="sim.capacidadId" name="capacidadId">
+          <select [(ngModel)]="sim['capacidadId']" name="capacidadId">
             <option value="">VACIO</option>
-            <option *ngFor="let c of data.capacidades" [value]="c.id_capacidad">{{ c.descripcion }}</option>
+            <option *ngFor="let c of data.capacidades" [value]="c.id_capacidad">
+              {{ c.cant_capacidad || c.descripcion || c.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Estado</label>
-          <select [(ngModel)]="sim.estadoId" name="estadoId">
+          <select [(ngModel)]="sim['estadoId']" name="estadoId">
             <option value="">VACIO</option>
-            <option *ngFor="let e of data.estados" [value]="e.id_estado">{{ e.descripcion }}</option>
+            <option *ngFor="let e of data.estados" [value]="e.id_estado">
+              {{ e.nombre_estado || e.descripcion || e.nombre }}
+            </option>
           </select>
         </div>
       </div>
 
-      <!--  IP / APN -->
+      <!-- IP / APN -->
       <div class="grid-2">
         <!-- Dirección IP -->
         <div class="field-group">
@@ -96,7 +106,7 @@
           </div>
 
           <div class="list-tags">
-            <span *ngFor="let ip of sim.ip; let i = index" class="tag">
+            <span *ngFor="let ip of sim['ip']; let i = index" class="tag">
               {{ ip }} 
               <i (click)="eliminarIp(i)" title="Eliminar IP">×</i>
             </span>
@@ -126,7 +136,7 @@
           </div>
 
           <div class="list-tags">
-            <span *ngFor="let apn of sim.apn; let i = index" class="tag">
+            <span *ngFor="let apn of sim['apn']; let i = index" class="tag">
               {{ apn }} 
               <i (click)="eliminarApn(i)" title="Eliminar APN">×</i>
             </span>
@@ -134,30 +144,36 @@
         </div>
       </div>
 
-      <!-- Ubicación y Asignacion -->
+      <!-- Ubicación y Asignación -->
       <h3>Ubicación y Responsable</h3>
       <div class="grid-main">
         <div class="field-group">
           <label>Responsable</label>
-          <select [(ngModel)]="sim.responsableId" name="responsableId">
+          <select [(ngModel)]="sim['responsableId']" name="responsableId">
             <option value="">VACIO</option>
-            <option *ngFor="let r of data.responsables" [value]="r.id_responsable">{{ r.descripcion }}</option>
+            <option *ngFor="let r of data.responsables" [value]="r.id_responsable">
+              {{ r.nombre_responsable || r.descripcion || r.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Ubicación</label>
-          <select [(ngModel)]="sim.ubicacionId" name="ubicacionId">
+          <select [(ngModel)]="sim['ubicacionId']" name="ubicacionId">
             <option value="">VACIO</option>
-            <option *ngFor="let u of data.ubicaciones" [value]="u.id_ubicacion">{{ u.descripcion }}</option>
+            <option *ngFor="let u of data.ubicaciones" [value]="u.id_ubicacion">
+              {{ u.nombre_ubicacion || u.descripcion || u.nombre }}
+            </option>
           </select>
         </div>
 
         <div class="field-group">
           <label>Destino</label>
-          <select [(ngModel)]="sim.destinoId" name="destinoId">
+          <select [(ngModel)]="sim['destinoId']" name="destinoId">
             <option value="">VACIO</option>
-            <option *ngFor="let d of data.destinos" [value]="d.id_destino">{{ d.descripcion }}</option>
+            <option *ngFor="let d of data.destinos" [value]="d.id_destino">
+              {{ d.nombre_destino || d.descripcion || d.nombre }}
+            </option>
           </select>
         </div>
       </div>
@@ -167,7 +183,7 @@
         <div class="field-group">
           <label>Observación Técnica</label>
           <textarea 
-            [(ngModel)]="sim.observacion" 
+            [(ngModel)]="sim['observacion']" 
             name="observacion" 
             rows="2" 
             placeholder="Notas internas sobre la SIM...">
@@ -175,27 +191,26 @@
         </div>
 
         <div class="field-group" *ngIf="isEdit" style="margin-top: 15px;">
-          <label style="color: #555;">Motivo de la modificación</label>
+          <label style="color: #555;">Motivo de la modificación *</label>
           <textarea 
-            [(ngModel)]="sim.razonModificacion" 
+            [(ngModel)]="sim['razonModificacion']" 
             name="razonModificacion" 
             rows="2" 
             placeholder="¿Por qué se edita este registro? (Obligatorio)"
             required>
           </textarea>
-          <small [ngStyle]="{'color': (sim.razonModificacion?.length < 5) ? '#e53e3e' : '#38a169'}">
-            {{ sim.razonModificacion?.length || 0 }} / 5 caracteres mínimos
+          <small [ngStyle]="{'color': (sim['razonModificacion']?.length < 5) ? '#e53e3e' : '#38a169'}">
+            {{ sim['razonModificacion']?.length || 0 }} / 5 caracteres mínimos
           </small>
         </div>
       </div>
 
-      <!-- Botones-->
+      <!-- Botones -->
       <div class="form-footer">
         <button 
-          type="button" 
+          type="submit" 
           class="btn-guardar" 
-          (click)="guardar()"
-          [disabled]="isEdit && (!sim.razonModificacion || sim.razonModificacion.length < 5)">
+          [disabled]="isEdit && (!sim['razonModificacion'] || sim['razonModificacion'].length < 5)">
           {{ isEdit ? 'Actualizar Cambios' : 'Registrar Sim' }}
         </button>
         <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>

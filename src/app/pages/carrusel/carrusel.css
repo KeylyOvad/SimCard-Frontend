@@ -16,7 +16,7 @@
   justify-content: center;
 }
 
-/* 1. Fondo difuminado */
+/*Fondo difuminado */
 .slide-bg-blur {
   position: absolute;
   inset: 0;
@@ -28,7 +28,7 @@
   pointer-events: none;
 }
 
-/* 2. Imagen principal nítida */
+/* Imagen principal */
 .slide-bg {
   position: relative;
   max-width: 100%;
@@ -37,7 +37,6 @@
   z-index: 1;
 }
 
-/* 3. Sombreado y Contenido */
 .slide-overlay {
   position: absolute;
   inset: 0;
@@ -76,7 +75,7 @@
   line-height: 1.4;
 }
 
-/* Indicador PrimeNG activo */
+/* Indicador PrimeNG  */
 :host ::ng-template p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
   background-color: var(--carrusel-accent) !important;
 }

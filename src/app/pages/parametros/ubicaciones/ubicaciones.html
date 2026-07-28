@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Título principal -->
+  
   <header class="page-header">
     <h1>Gestión de Ubicaciones</h1>
     <p>Administración de ubicaciones</p>
@@ -18,7 +18,7 @@
     [showGridlines]="true"
     styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
   >
-    <!-- Buscador y botón Agregar -->
+    <!-- Buscador + boton Agregar -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
         <p-iconfield iconPosition="left" class="search-field">
@@ -42,7 +42,6 @@
       </div>
     </ng-template>
 
-    <!-- Encabezados alineados al estándar del proyecto -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 15%;" class="text-center">ID</th>
@@ -53,7 +52,6 @@
       </tr>
     </ng-template>
 
-    <!-- Filas -->
     <ng-template pTemplate="body" let-ubi let-rowIndex="rowIndex">
       <tr>
         <td class="text-center">{{ ubi.id_ubicacion || (rowIndex + 1) }}</td>

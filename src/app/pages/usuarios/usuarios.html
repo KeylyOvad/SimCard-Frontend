@@ -1,13 +1,12 @@
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Encabezado Global -->
+  
   <header class="page-header">
     <h1>Gestión de Usuarios</h1>
     <p>Administración de cuentas de acceso al sistema</p>
   </header>
 
-  <!-- Tabla usando la clase global cens-card-table y p-datatable-gridlines -->
   <p-table
     #dt
     [value]="usuarios"
@@ -17,7 +16,6 @@
     [globalFilterFields]="['nombreCompleto', 'correo', 'rolTexto', 'estado']"
     styleClass="p-datatable-striped p-datatable-gridlines cens-card-table"
   >
-    <!-- Header superior de la tabla -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
         <p-iconfield iconPosition="left" class="search-field">
@@ -41,7 +39,6 @@
       </div>
     </ng-template>
 
-    <!-- Encabezados de Columnas -->
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="nombreCompleto">Nombre <p-sortIcon field="nombreCompleto" /></th>
@@ -52,7 +49,6 @@
       </tr>
     </ng-template>
 
-    <!-- Filas de Datos -->
     <ng-template pTemplate="body" let-usuario>
       <tr>
         <td><strong>{{ usuario.nombreCompleto }}</strong></td>
@@ -94,7 +90,6 @@
       </tr>
     </ng-template>
 
-    <!-- Mensaje vacío -->
     <ng-template pTemplate="emptymessage">
       <tr>
         <td [attr.colspan]="puedeModificar ? 5 : 4" class="text-center p-4">
@@ -105,7 +100,6 @@
   </p-table>
 </div>
 
-<!-- Modal Formulario -->
 <p-dialog
   [(visible)]="modalAbierto"
   [modal]="true"

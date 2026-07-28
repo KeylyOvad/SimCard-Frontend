@@ -1,11 +1,8 @@
 :root {
-  /* Colores Corporativos CENS */
   --cens-primary: #00875a;
   --cens-primary-dark: #005e2b;
   --cens-bg-light: #e6f4ea;
   --cens-border-light: #b7e1cd;
-
-  /* Estados y Colores Secundarios */
   --cens-success: #10b981;
   --cens-danger: #ef4444;
   --cens-border-gray: #cbd5e1;

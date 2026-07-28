@@ -1,7 +1,6 @@
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Encabezado de la vista con Clases Globales -->
   <header class="page-header">
     <h1>Carga Masiva de SIMs</h1>
     <p>Importa múltiples registros al sistema a través de un archivo de Excel (.xlsx, .xls, .xlsm)</p>
@@ -11,7 +10,7 @@
   <div class="upload-card">
     <h3>Seleccionar archivo Excel</h3>
 
-    <!-- Zona Drag & Drop -->
+    <!-- Zona Drag y Drop -->
     <div 
       class="dropzone-area" 
       [class.has-file]="nombreArchivo"
@@ -33,7 +32,6 @@
       <p class="file-type-hint">Formatos soportados: .xlsx, .xls, .xlsm</p>
     </div>
 
-    <!-- Badge con Archivo Seleccionado -->
     <div class="selected-file-badge" *ngIf="nombreArchivo">
       <span class="file-info">
         <i class="pi pi-file"></i> {{ nombreArchivo }}
@@ -58,7 +56,7 @@
     ></p-button>
   </div>
 
-  <!-- Contenedor de Carga (Spinner) -->
+ 
   <div *ngIf="cargando" class="loading-container">
     <p-progressSpinner 
       styleClass="w-3rem h-3rem" 
@@ -68,7 +66,6 @@
     <p class="mt-3">Procesando el documento y validando consistencia de datos, por favor espera...</p>
   </div>
 
-  <!-- Resumen de Resultados -->
   <div *ngIf="resultado && !resultado.error" class="result-alert-box">
     <h3 class="result-box-title">📊 Resultado de Importación</h3>
     
@@ -84,7 +81,7 @@
     </div>
   </div>
 
-  <!-- Alerta de Error -->
+  
   <p-message 
     *ngIf="resultado?.error" 
     severity="error" 

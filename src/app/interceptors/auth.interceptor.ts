@@ -3,11 +3,13 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router = inject(Router);
-  const token = localStorage.getItem('token');
+  const authService = inject(AuthService);
+  const token = authService.getToken();
 
   const authReq = token
     ? req.clone({
@@ -21,10 +23,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error) => {
 
       if (error.status === 401) {
-        console.log('Sesión expirada');
+        console.warn('Sesión expirada o no autorizada');
 
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        authService.logout();
 
         router.navigate(['/login']);
       }

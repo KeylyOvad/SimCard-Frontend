@@ -1,7 +1,8 @@
+<!-- Encabezado superior -->
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Título principal -->
+  <!-- Titulo principal de la pagina -->
   <header class="page-header">
     <h1>Gestión de Destinos</h1>
     <p>Administración de destinos de SIM Cards</p>
@@ -18,9 +19,10 @@
     [showGridlines]="true"
     styleClass="p-datatable-striped cens-card-table tabla-proporcionada"
   >
-    <!-- Buscador + botón Agregar -->
+    <!-- Buscador y boton agregar -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
+        <!-- Campo de busqueda -->
         <p-iconfield iconPosition="left" class="search-field">
           <p-inputicon styleClass="pi pi-search"></p-inputicon>
           <input
@@ -32,6 +34,7 @@
           />
         </p-iconfield>
 
+        <!-- Boton para agregar nuevo destino -->
         <p-button
           *ngIf="puedeModificar"
           label="Agregar Destino"
@@ -42,6 +45,7 @@
       </div>
     </ng-template>
 
+    <!-- Titulos de las columnas -->
     <ng-template pTemplate="header">
       <tr>
         <th style="width: 15%;" class="text-center">ID</th>
@@ -52,11 +56,13 @@
       </tr>
     </ng-template>
 
+    <!-- Filas de datos de la tabla -->
     <ng-template pTemplate="body" let-dest let-rowIndex="rowIndex">
       <tr>
         <td class="text-center">{{ dest.id_destino || (rowIndex + 1) }}</td>
         <td class="text-left"><strong>{{ dest.descripcion }}</strong></td>
         
+        <!-- Botones para editar y eliminar -->
         <td *ngIf="puedeModificar" class="text-center">
           <div class="actions-wrapper">
             <button
@@ -80,6 +86,7 @@
       </tr>
     </ng-template>
 
+    <!-- Mensaje cuando la tabla esta vacia -->
     <ng-template pTemplate="emptymessage">
       <tr>
         <td [attr.colspan]="puedeModificar ? 3 : 2" class="p-4 text-center">
@@ -90,7 +97,7 @@
   </p-table>
 </div>
 
-<!-- Modal Dialog PrimeNG -->
+<!-- Modal emergente para agregar o editar -->
 <p-dialog
   [(visible)]="modalAbierto"
   [modal]="true"
@@ -100,6 +107,7 @@
   styleClass="modal-custom-cens"
   (onHide)="cerrarModal()"
 >
+  <!-- Titulo del modal -->
   <ng-template pTemplate="header">
     <div class="modal-header-custom">
       <span class="icon">🌍</span>
@@ -107,7 +115,9 @@
     </div>
   </ng-template>
 
+  <!-- Formulario del modal -->
   <form class="dialog-form" (ngSubmit)="guardarDestino()">
+    <!-- Campo para la descripcion -->
     <div class="field">
       <label for="descripcionDestino">Descripción *</label>
       <input 
@@ -122,6 +132,7 @@
       />
     </div>
 
+    <!-- Botones de accion -->
     <div class="modal-footer-custom">
       <button type="submit" class="btn-guardar-custom">Guardar</button>
       <button type="button" class="btn-cancelar-custom" (click)="cerrarModal()">Cancelar</button>

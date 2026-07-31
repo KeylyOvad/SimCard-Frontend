@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
 
-// Importaciones de PrimeNG
+// Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,6 +14,7 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+// Estructura de datos para un tipo de SIM
 export interface TipoSimItem {
   id_tiposim?: number;
   descripcion: string;
@@ -38,13 +39,16 @@ export interface TipoSimItem {
   styleUrls: ['./simcard.css']
 })
 export class TipoSim implements OnInit {
+  // Ruta base del servidor
   private readonly apiUrl = 'http://localhost:3000/api/tiposim';
 
+  // Variables de control y datos
   modalAbierto = false;
   tiposim: TipoSimItem[] = [];
   tipoEditando: TipoSimItem | null = null;
   puedeModificar = false;
 
+  // Objeto para el formulario
   nuevoTipo: TipoSimItem = { descripcion: '' };
 
   constructor(
@@ -54,10 +58,12 @@ export class TipoSim implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Revisa si es admin y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarTiposSim();
   }
 
+  // Trae la lista de tipos de SIM desde la API
   cargarTiposSim() {
     this.http.get<TipoSimItem[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -70,17 +76,20 @@ export class TipoSim implements OnInit {
     });
   }
 
+  // Abre el modal para crear un nuevo tipo
   abrirModal() {
     if (!this.puedeModificar) return; 
     this.resetForm();
     this.modalAbierto = true;
   }
 
+  // Cierra el modal y limpia el formulario
   cerrarModal() {
     this.modalAbierto = false;
     this.resetForm();
   }
 
+  // Carga los datos en el modal para editar
   editarTipoSim(tipo: TipoSimItem) {
     if (!this.puedeModificar) return; 
     this.tipoEditando = tipo;
@@ -88,6 +97,7 @@ export class TipoSim implements OnInit {
     this.modalAbierto = true;
   }
 
+  // Elimina un tipo de SIM
   eliminarTipoSim(tipo: TipoSimItem) {
     if (!this.puedeModificar || !tipo.id_tiposim) return; 
     if (!confirm(`¿Eliminar tipo de SIM: ${tipo.descripcion}?`)) return;
@@ -102,6 +112,7 @@ export class TipoSim implements OnInit {
     });
   }
 
+  // Guarda o actualiza un tipo de SIM
   guardarTipoSim() {
     if (!this.puedeModificar) return; 
 
@@ -113,6 +124,7 @@ export class TipoSim implements OnInit {
 
     const payload = { descripcion: descLimpia };
 
+    // Si es un tipo nuevo
     if (!this.tipoEditando) {
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
@@ -126,6 +138,7 @@ export class TipoSim implements OnInit {
         }
       });
     } else {
+      // Si se esta editando un tipo existente
       const id = this.tipoEditando.id_tiposim;
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
@@ -141,6 +154,7 @@ export class TipoSim implements OnInit {
     }
   }
 
+  // Limpia los datos del formulario
   resetForm() {
     this.nuevoTipo = { descripcion: '' };
     this.tipoEditando = null;

@@ -15,11 +15,13 @@ import { SimService } from '../../services/sim.service';
   styleUrls: ['./sim-form.css']
 })
 export class SimForm implements OnInit {
+  // Variables principales del formulario
   sim: Record<string, any> = {};
   nuevaIp = '';
   nuevoApn = '';
   data$!: Observable<any>;
   
+  // Modos de vista
   isEdit = false;
   idSim: string | null = null;
 
@@ -30,10 +32,12 @@ export class SimForm implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Inicializa formulario y carga listas desplegables
     this.resetForm();
     this.cargarSelects();
     this.idSim = this.route.snapshot.paramMap.get('id');
     
+    // Si hay un ID en la ruta se cambia a modo edicion
     if (this.idSim) {
       this.isEdit = true;
       this.cargarDatosSim(this.idSim);
@@ -42,6 +46,7 @@ export class SimForm implements OnInit {
     }
   }
 
+  // Trae los datos de la SIM a editar
   cargarDatosSim(id: string): void {
     this.simService.getSimById(id).subscribe({
       next: (data: any) => {
@@ -69,6 +74,7 @@ export class SimForm implements OnInit {
     });
   }
 
+  // Limpia los campos del formulario
   resetForm(): void {
     this.sim = {
       numeroSim: '', 
@@ -92,6 +98,7 @@ export class SimForm implements OnInit {
     this.nuevoApn = '';
   }
 
+  // Carga todas las listas desplegables al mismo tiempo
   cargarSelects(): void {
     this.data$ = forkJoin({
       operadores: this.simService.getOperadores(),
@@ -105,10 +112,12 @@ export class SimForm implements OnInit {
     });
   }
 
+  // Valida y agrega una IP a la lista
   agregarIp(): void {
     const ipLimpia = this.nuevaIp.trim();
     if (!ipLimpia) return;
 
+    // Regla para verificar formato de IP
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
     if (!ipRegex.test(ipLimpia)) {
@@ -126,10 +135,12 @@ export class SimForm implements OnInit {
     this.nuevaIp = '';
   }
 
+  // Valida y agrega un APN a la lista
   agregarApn(): void {
     const apnLimpio = this.nuevoApn.trim();
     if (!apnLimpio) return;
 
+    // Regla para verificar formato de APN
     const apnRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9.-]+$/;
 
     if (!apnRegex.test(apnLimpio)) {
@@ -147,26 +158,32 @@ export class SimForm implements OnInit {
     this.nuevoApn = '';
   }
 
+  // Elimina una IP por su posicion
   eliminarIp(index: number): void { 
     if (this.sim['ip']) this.sim['ip'].splice(index, 1); 
   }
   
+  // Elimina un APN por su posicion
   eliminarApn(index: number): void { 
     if (this.sim['apn']) this.sim['apn'].splice(index, 1); 
   }
 
+  // Valida y guarda o actualiza la informacion
   guardar(): void {
+    // Valida razon al editar
     if (this.isEdit && (!this.sim['razonModificacion'] || this.sim['razonModificacion'].trim().length < 5)) {
       alert("⚠️ Debes ingresar una razón para la modificación (mínimo 5 caracteres).");
       return;
     }
 
+    // Valores por defecto para PIN y PUK
     let pinVal = this.sim['pin'] ? this.sim['pin'].toString().trim() : '';
     let pukVal = this.sim['puk'] ? this.sim['puk'].toString().trim() : '';
 
     if (pinVal === '') pinVal = '0000'; 
     if (pukVal === '') pukVal = '00000000'; 
   
+    // Validacion de digitos de PIN y PUK
     if (pinVal !== '0' && pinVal !== '0000' && pinVal.length !== 4) {
       alert("⚠️ El PIN debe tener 4 dígitos.");
       return;
@@ -179,6 +196,7 @@ export class SimForm implements OnInit {
     this.sim['pin'] = pinVal;
     this.sim['puk'] = pukVal;
 
+    // Actualiza o crea el registro segun el caso
     if (this.isEdit && this.idSim) {
       this.simService.updateSim(this.idSim, this.sim).subscribe({
         next: () => {
@@ -206,6 +224,7 @@ export class SimForm implements OnInit {
     }
   }
 
+  // Cancela y regresa al inicio
   cancelar(): void {
     this.router.navigate(['/home']); 
   }

@@ -40,7 +40,7 @@ export const routes: Routes = [
     component: Parametros,
     canActivate: [AuthGuard]
   },
-  // Subrutas de parámetros (ahora todas protegidas ✅)
+  
   { 
     path: 'parametros/operadores', 
     component: Operadores, 
@@ -92,13 +92,13 @@ export const routes: Routes = [
     component: SimForm,
     canActivate: [AuthGuard]
   },
-  // Carga masiva
+  
   {
     path: 'cargar-excel',
     component: CargarExcelComponent,
     canActivate: [AuthGuard]
   },
-  // Comodín para redirigir rutas no encontradas al login
+  
   {
     path: '**',
     redirectTo: 'login'

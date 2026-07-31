@@ -16,7 +16,6 @@
   justify-content: center;
 }
 
-/*Fondo difuminado */
 .slide-bg-blur {
   position: absolute;
   inset: 0;
@@ -75,7 +74,6 @@
   line-height: 1.4;
 }
 
-/* Indicador PrimeNG  */
 :host ::ng-template p-carousel .p-carousel-indicators .p-carousel-indicator.p-highlight button {
   background-color: var(--carrusel-accent) !important;
 }

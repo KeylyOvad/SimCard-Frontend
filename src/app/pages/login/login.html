@@ -1,11 +1,16 @@
+<!-- Fondo principal de la pantalla -->
 <div class="login-wrapper">
+  <!-- Tarjeta de inicio de sesion -->
   <div class="login-card">
     
+    <!-- Logo de la empresa -->
     <div class="logo-container">
       <img src="assets/logo-cens.png" alt="CENS - Grupo EPM" class="brand-logo" />
     </div>
 
+    <!-- Formulario de ingreso -->
     <form (ngSubmit)="onLogin()" class="login-form">
+      <!-- Campo para el correo -->
       <input 
         type="email" 
         pInputText 
@@ -14,6 +19,7 @@
         placeholder="Correo Electrónico" 
         class="custom-input" />
 
+      <!-- Campo para la contrasena -->
       <input 
         type="password" 
         pInputText 
@@ -22,11 +28,12 @@
         placeholder="Contraseña" 
         class="custom-input" />
 
-      <!-- Mensaje de error discreto si falla el login -->
-      <div *ngIf="errorMessage" class="error-banner">
-        {{ errorMessage }}
+      <!-- Mensaje si hay un error -->
+      <div *ngIf="errorMessage()" class="error-banner">
+        {{ errorMessage() }}
       </div>
 
+      <!-- Boton para ingresar -->
       <button type="submit" class="btn-entrar" [disabled]="loading">
         ENTRAR
       </button>

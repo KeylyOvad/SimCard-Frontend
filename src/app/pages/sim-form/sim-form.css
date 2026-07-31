@@ -7,6 +7,7 @@
   justify-content: center;
 }
 
+/* Tarjeta contenedora del formulario */
 .form-card {
   background: white;
   width: 100%;
@@ -17,16 +18,25 @@
   border: 1px solid #e5e7eb;
 }
 
-/* Encabezado */
+/* Encabezado del formulario */
 .form-header {
   background: #00b875; 
   color: white;
   padding: 16px 25px;
 }
 
-.form-header h2 { margin: 0; font-size: 18px; font-weight: 700; }
-form { padding: 25px; }
+.form-header h2 { 
+  margin: 0; 
+  font-size: 18px; 
+  font-weight: 700; 
+}
 
+/* Relleno interno del formulario */
+form { 
+  padding: 25px; 
+}
+
+/* Titulos de las secciones */
 h3 {
   font-size: 11px;
   font-weight: 800;
@@ -37,19 +47,38 @@ h3 {
   margin: 25px 0 15px;
 }
 
-
+/* Grillas para ordenar los campos */
 .grid-main, .grid-2 {
   display: grid;
   gap: 15px 20px;
   margin-bottom: 15px;
 }
-.grid-main { grid-template-columns: repeat(3, 1fr); }
-.grid-2 { grid-template-columns: repeat(2, 1fr); }
 
-.field-group { display: flex; flex-direction: column; gap: 6px; }
-.field-group label { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; }
+/* Grilla de 3 columnas */
+.grid-main { 
+  grid-template-columns: repeat(3, 1fr); 
+}
 
-/* Controles de entrada */
+/* Grilla de 2 columnas */
+.grid-2 { 
+  grid-template-columns: repeat(2, 1fr); 
+}
+
+/* Agrupador de etiqueta e input */
+.field-group { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 6px; 
+}
+
+.field-group label { 
+  font-size: 11px; 
+  font-weight: 700; 
+  color: #475569; 
+  text-transform: uppercase; 
+}
+
+/* Estilos de las cajas de texto y seleccion */
 input, select, textarea {
   height: 42px;
   padding: 8px 12px;
@@ -63,8 +92,14 @@ input, select, textarea {
   transition: all 0.2s ease;
 }
 
-textarea { height: auto; min-height: 70px; resize: vertical; }
+/* Estilo para caja de texto grande */
+textarea { 
+  height: auto; 
+  min-height: 70px; 
+  resize: vertical; 
+}
 
+/* Estado al hacer clic en los campos */
 input:focus, select:focus, textarea:focus {
   outline: none;
   background: #fff;
@@ -72,43 +107,123 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(0, 184, 117, 0.15);
 }
 
-/* Filas de IP/APN */
-.row-inline { display: flex; gap: 10px; align-items: center; }
-.input-dynamic { flex: 1; }
+/* Filas alineadas para IP o APN */
+.row-inline { 
+  display: flex; 
+  gap: 10px; 
+  align-items: center; 
+}
 
+.input-dynamic { 
+  flex: 1; 
+}
+
+/* Boton para agregar elementos dinamicos */
 .btn-add-pro {
-  width: 42px; height: 42px; min-width: 42px;
-  border-radius: 10px; border: none;
-  background: #00b875; color: white;
-  font-size: 20px; font-weight: bold;
-  cursor: pointer; transition: background 0.2s;
+  width: 42px; 
+  height: 42px; 
+  min-width: 42px;
+  border-radius: 10px; 
+  border: none;
+  background: #00b875; 
+  color: white;
+  font-size: 20px; 
+  font-weight: bold;
+  cursor: pointer; 
+  transition: background 0.2s;
 }
-.btn-add-pro:hover { background: #009e64; }
 
-.list-tags { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.btn-add-pro:hover { 
+  background: #009e64; 
+}
+
+/* Contenedor de etiquetas generadas */
+.list-tags { 
+  margin-top: 8px; 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 6px; 
+}
+
+/* Diseno de etiqueta individual */
 .tag {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: #ecfdf5; border: 1px solid #a7f3d0;
-  color: #047857; padding: 4px 10px; border-radius: 16px;
-  font-size: 12px; font-weight: 600;
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px;
+  background: #ecfdf5; 
+  border: 1px solid #a7f3d0;
+  color: #047857; 
+  padding: 4px 10px; 
+  border-radius: 16px;
+  font-size: 12px; 
+  font-weight: 600;
 }
-.tag i { cursor: pointer; color: #ef4444; font-weight: bold; font-style: normal; }
 
-.form-footer { margin-top: 30px; display: flex; justify-content: center; gap: 15px; }
+/* Icono para quitar etiqueta */
+.tag i { 
+  cursor: pointer; 
+  color: #ef4444; 
+  font-weight: bold; 
+  font-style: normal; 
+}
 
+/* Pie del formulario */
+.form-footer { 
+  margin-top: 30px; 
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+}
+
+/* Estilos base para botones del pie */
 .btn-guardar, .btn-cancelar {
-  padding: 10px 32px; border-radius: 12px;
-  font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s;
+  padding: 10px 32px; 
+  border-radius: 12px;
+  font-size: 15px; 
+  font-weight: 700; 
+  border: none; 
+  cursor: pointer; 
+  transition: background 0.2s;
 }
-.btn-guardar { background: #00b875; color: white; }
-.btn-guardar:hover { background: #009e64; }
-.btn-guardar:disabled { background: #a7f3d0; color: #065f46; cursor: not-allowed; }
 
-.btn-cancelar { background: #ef4444; color: white; }
-.btn-cancelar:hover { background: #dc2626; }
+/* Boton de guardar */
+.btn-guardar { 
+  background: #00b875; 
+  color: white; 
+}
 
+.btn-guardar:hover { 
+  background: #009e64; 
+}
+
+/* Boton guardar deshabilitado */
+.btn-guardar:disabled { 
+  background: #a7f3d0; 
+  color: #065f46; 
+  cursor: not-allowed; 
+}
+
+/* Boton de cancelar */
+.btn-cancelar { 
+  background: #ef4444; 
+  color: white; 
+}
+
+.btn-cancelar:hover { 
+  background: #dc2626; 
+}
+
+/* Ajustes para pantallas de celular */
 @media (max-width: 768px) {
-  .grid-main, .grid-2 { grid-template-columns: 1fr; }
-  .form-footer { flex-direction: column; }
-  .btn-guardar, .btn-cancelar { width: 100%; }
+  .grid-main, .grid-2 { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .form-footer { 
+    flex-direction: column; 
+  }
+  
+  .btn-guardar, .btn-cancelar { 
+    width: 100%; 
+  }
 }

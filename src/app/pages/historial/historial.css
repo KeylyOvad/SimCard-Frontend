@@ -1,16 +1,17 @@
-/* Configuración del Modal */
+/* Ventana modal */
 :host ::ng-deep .modal-historial-cens {
   width: 90vw;
   max-width: 920px;
 }
 
+/* Contenido de la ventana modal */
 :host ::ng-deep .modal-historial-cens .p-dialog-content {
   background: #ffffff !important;
   padding: 20px;
   max-height: 70vh !important;
 }
 
-/*Tarjeta principal con borde verde */
+/* Tarjeta principal */
 .card-historial-item {
   background: #ffffff;
   border: 1.5px solid var(--cens-primary); 
@@ -20,7 +21,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
-/* Header del reporte */
+/* Encabezado del reporte */
 .historial-report-header {
   display: flex;
   justify-content: space-between;
@@ -35,6 +36,7 @@
   margin-bottom: 16px;
 }
 
+/* Rejilla de 3 columnas */
 .historial-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -42,6 +44,7 @@
   margin-bottom: 16px;
 }
 
+/* Casilla de la rejilla */
 .grid-item {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -53,6 +56,7 @@
   gap: 4px;
 }
 
+/* Texto del titulo en la casilla */
 .grid-item .label {
   font-size: 11px;
   font-weight: 600;
@@ -61,6 +65,7 @@
   letter-spacing: 0.3px;
 }
 
+/* Valor o dato en la casilla */
 .grid-item .val {
   font-size: 13.5px;
   font-weight: 500;
@@ -68,7 +73,7 @@
   line-height: 1.3;
 }
 
-/* Tag de PrimeNG dentro de cuadros */
+/* Etiqueta de estado */
 :host ::ng-deep .grid-item .p-tag {
   background: #e2e8f0 !important;
   color: #475569 !important;
@@ -79,13 +84,14 @@
   width: fit-content !important;
 }
 
-/* Cajas de Observación y Motivo */
+/* Rejilla de observaciones */
 .historial-obs-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
+/* Cajas de texto de observacion */
 .obs-card {
   padding: 12px 14px;
   border: 1px solid #e2e8f0;
@@ -93,11 +99,13 @@
   background: #f8fafc;
 }
 
+/* Caja destacada para el motivo */
 .obs-card.reason-card {
   background: var(--cens-bg-light);
   border: 1px solid var(--cens-border-light);
 }
 
+/* Titulo de la observacion */
 .obs-title {
   display: block;
   font-size: 11px;
@@ -107,10 +115,12 @@
   margin-bottom: 4px;
 }
 
+/* Titulo en color verde */
 .obs-title.text-green {
   color: var(--cens-primary-dark);
 }
 
+/* Texto dentro de la observacion */
 .obs-card p {
   margin: 0;
   font-size: 13px;
@@ -119,13 +129,14 @@
   line-height: 1.4;
 }
 
-/* Estado Vacío */
+/* Mensaje cuando no hay datos */
 .empty-historial {
   text-align: center;
   padding: 40px;
   color: #64748b;
 }
 
+/* Icono del mensaje vacio */
 .empty-historial i {
   font-size: 36px;
   margin-bottom: 12px;

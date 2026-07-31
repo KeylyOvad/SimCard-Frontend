@@ -1,35 +1,45 @@
+<!-- Encabezado superior -->
 <app-header></app-header>
 
+<!-- Contenedor principal con datos cargados -->
 <div class="container" *ngIf="data$ | async as data">
   <div class="form-card">
+    <!-- Titulo del formulario -->
     <div class="form-header">
       <h2>{{ isEdit ? '📝 Modificar Sim Card' : '📱 Agregar Sim Card' }}</h2>
     </div>
 
+    <!-- Formulario principal -->
     <form #form="ngForm" (ngSubmit)="guardar()" novalidate>
       <h3>Detalles de Sim</h3>
       
+      <!-- Campos principales -->
       <div class="grid-main">
+        <!-- Numero de SIM -->
         <div class="field-group">
           <label>Número de sim</label>
           <input [(ngModel)]="sim['numeroSim']" name="numeroSim" placeholder="Ingrese número" autocomplete="off" required>
         </div>
 
+        <!-- Numero de Linea -->
         <div class="field-group">
           <label>Número de Línea</label>
           <input [(ngModel)]="sim['numeroLinea']" name="numeroLinea" placeholder="Ingrese línea" autocomplete="off" required>
         </div>
 
+        <!-- PIN -->
         <div class="field-group">
           <label>PIN</label>
           <input [(ngModel)]="sim['pin']" name="pin" placeholder="0000" maxlength="4" autocomplete="off">
         </div>
 
+        <!-- PUK -->
         <div class="field-group">
           <label>PUK</label>
           <input [(ngModel)]="sim['puk']" name="puk" placeholder="00000000" maxlength="8" autocomplete="off">
         </div>
         
+        <!-- Seleccion de Tipo de SIM -->
         <div class="field-group">
           <label>Tipo de Sim</label>
           <select [(ngModel)]="sim['tipoSimId']" name="tipoSimId">
@@ -40,6 +50,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Operador -->
         <div class="field-group">
           <label>Operador</label>
           <select [(ngModel)]="sim['operadorId']" name="operadorId">
@@ -50,6 +61,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Plan -->
         <div class="field-group">
           <label>Plan</label>
           <select [(ngModel)]="sim['planId']" name="planId">
@@ -60,6 +72,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Capacidad -->
         <div class="field-group">
           <label>Capacidad</label>
           <select [(ngModel)]="sim['capacidadId']" name="capacidadId">
@@ -70,6 +83,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Estado -->
         <div class="field-group">
           <label>Estado</label>
           <select [(ngModel)]="sim['estadoId']" name="estadoId">
@@ -81,9 +95,9 @@
         </div>
       </div>
 
-      <!-- IP / APN -->
+      <!-- Seccion IP y APN -->
       <div class="grid-2">
-        <!-- Dirección IP -->
+        <!-- Agregar IPs -->
         <div class="field-group">
           <label>Dirección IP</label>
           <div class="row-inline">
@@ -105,6 +119,7 @@
             </button>
           </div>
 
+          <!-- Lista de IPs agregadas -->
           <div class="list-tags">
             <span *ngFor="let ip of sim['ip']; let i = index" class="tag">
               {{ ip }} 
@@ -113,7 +128,7 @@
           </div>
         </div>
 
-        <!-- APN -->
+        <!-- Agregar APN -->
         <div class="field-group">
           <label>APN</label>
           <div class="row-inline">
@@ -135,6 +150,7 @@
             </button>
           </div>
 
+          <!-- Lista de APNs agregados -->
           <div class="list-tags">
             <span *ngFor="let apn of sim['apn']; let i = index" class="tag">
               {{ apn }} 
@@ -144,9 +160,10 @@
         </div>
       </div>
 
-      <!-- Ubicación y Asignación -->
+      <!-- Ubicacion y Responsables -->
       <h3>Ubicación y Responsable</h3>
       <div class="grid-main">
+        <!-- Seleccion de Responsable -->
         <div class="field-group">
           <label>Responsable</label>
           <select [(ngModel)]="sim['responsableId']" name="responsableId">
@@ -157,6 +174,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Ubicacion -->
         <div class="field-group">
           <label>Ubicación</label>
           <select [(ngModel)]="sim['ubicacionId']" name="ubicacionId">
@@ -167,6 +185,7 @@
           </select>
         </div>
 
+        <!-- Seleccion de Destino -->
         <div class="field-group">
           <label>Destino</label>
           <select [(ngModel)]="sim['destinoId']" name="destinoId">
@@ -178,8 +197,9 @@
         </div>
       </div>
 
-      <!-- Observaciones -->
+      <!-- Seccion de Notas u Observaciones -->
       <div class="notes-section">
+        <!-- Observacion general -->
         <div class="field-group">
           <label>Observación Técnica</label>
           <textarea 
@@ -190,6 +210,7 @@
           </textarea>
         </div>
 
+        <!-- Razon del cambio si esta editando -->
         <div class="field-group" *ngIf="isEdit" style="margin-top: 15px;">
           <label style="color: #555;">Motivo de la modificación *</label>
           <textarea 
@@ -199,13 +220,14 @@
             placeholder="¿Por qué se edita este registro? (Obligatorio)"
             required>
           </textarea>
+          <!-- Contador de caracteres -->
           <small [ngStyle]="{'color': (sim['razonModificacion']?.length < 5) ? '#e53e3e' : '#38a169'}">
             {{ sim['razonModificacion']?.length || 0 }} / 5 caracteres mínimos
           </small>
         </div>
       </div>
 
-      <!-- Botones -->
+      <!-- Botones para guardar o cancelar -->
       <div class="form-footer">
         <button 
           type="submit" 

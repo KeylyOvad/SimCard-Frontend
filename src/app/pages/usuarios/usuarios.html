@@ -1,12 +1,16 @@
+<!-- Encabezado superior de la aplicacion -->
 <app-header></app-header>
 
+<!-- Contenedor principal de la pagina -->
 <div class="page-container">
   
+  <!-- Titulo y descripcion de la pagina -->
   <header class="page-header">
     <h1>Gestión de Usuarios</h1>
     <p>Administración de cuentas de acceso al sistema</p>
   </header>
 
+  <!-- Tabla de usuarios con paginador y filtro -->
   <p-table
     #dt
     [value]="usuarios"
@@ -16,8 +20,10 @@
     [globalFilterFields]="['nombreCompleto', 'correo', 'rolTexto', 'estado']"
     styleClass="p-datatable-striped p-datatable-gridlines cens-card-table"
   >
+    <!-- Encabezado superior de la tabla (buscador y boton agregar) -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
+        <!-- Campo para buscar en la tabla -->
         <p-iconfield iconPosition="left" class="search-field">
           <p-inputicon styleClass="pi pi-search" />
           <input
@@ -29,6 +35,7 @@
           />
         </p-iconfield>
 
+        <!-- Boton para abrir el modal de nuevo usuario -->
         <p-button
           *ngIf="puedeModificar"
           label="Agregar Usuario"
@@ -39,6 +46,7 @@
       </div>
     </ng-template>
 
+    <!-- Columnas de la tabla con ordenamiento -->
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="nombreCompleto">Nombre <p-sortIcon field="nombreCompleto" /></th>
@@ -49,10 +57,12 @@
       </tr>
     </ng-template>
 
+    <!-- Filas con la informacion de los usuarios -->
     <ng-template pTemplate="body" let-usuario>
       <tr>
         <td><strong>{{ usuario.nombreCompleto }}</strong></td>
         <td>{{ usuario.correo }}</td>
+        <!-- Etiqueta de estado (Activo/Inactivo) -->
         <td>
           <p-tag
             [value]="usuario.estado"
@@ -60,6 +70,7 @@
             [rounded]="true"
           ></p-tag>
         </td>
+        <!-- Etiqueta de rol del usuario -->
         <td>
           <p-tag
             [value]="usuario.rolTexto"
@@ -67,6 +78,7 @@
             [rounded]="true"
           ></p-tag>
         </td>
+        <!-- Botones de acciones (Editar / Eliminar) -->
         <td *ngIf="puedeModificar" class="col-acciones">
           <div class="actions-wrapper">
             <button
@@ -90,6 +102,7 @@
       </tr>
     </ng-template>
 
+    <!-- Mensaje cuando no hay registros para mostrar -->
     <ng-template pTemplate="emptymessage">
       <tr>
         <td [attr.colspan]="puedeModificar ? 5 : 4" class="text-center p-4">
@@ -100,8 +113,10 @@
   </p-table>
 </div>
 
+<!-- Modal para crear o editar un usuario -->
 <p-dialog
-  [(visible)]="modalAbierto"
+  [visible]="modalAbierto"
+  (visibleChange)="modalAbierto = $event"
   [modal]="true"
   [style]="{ width: '520px' }"
   [draggable]="false"
@@ -109,6 +124,7 @@
   styleClass="modal-custom-cens"
   (onHide)="cerrarModal()"
 >
+  <!-- Titulo del modal -->
   <ng-template pTemplate="header">
     <div class="modal-header-custom">
       <span class="icon">📋</span>
@@ -116,7 +132,9 @@
     </div>
   </ng-template>
 
+  <!-- Formulario dentro del modal -->
   <form class="dialog-form" (ngSubmit)="guardarUsuario()">
+    <!-- Campos de Nombres y Apellidos -->
     <div class="form-grid">
       <div class="field">
         <label for="usrNombres">Nombres *</label>
@@ -128,11 +146,13 @@
       </div>
     </div>
 
+    <!-- Campo de Correo Electronico -->
     <div class="field mt-3">
       <label for="usrCorreo">Correo Electrónico *</label>
       <input id="usrCorreo" pInputText type="email" [(ngModel)]="nuevoUsuario.correo" name="correo" class="w-full" required />
     </div>
 
+    <!-- Campos de Contrasena y Confirmacion -->
     <div class="form-grid mt-3">
       <div class="field">
         <label for="usrPass">Contraseña {{ usuarioEditando ? '(Opcional)' : '*' }}</label>
@@ -144,6 +164,7 @@
       </div>
     </div>
 
+    <!-- Lista desplegable de Estado y Rol -->
     <div class="form-grid mt-3">
       <div class="field">
         <label>Estado</label>
@@ -172,11 +193,11 @@
       </div>
     </div>
 
+    <!-- Botones de accion del modal -->
     <div class="modal-footer-custom mt-3">
       <button 
         type="submit" 
         class="btn-guardar-custom"
-        [disabled]="!nuevoUsuario.nombres.trim() || !nuevoUsuario.correo.trim()"
       >
         Guardar
       </button>

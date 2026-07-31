@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-// Componentes PrimeNG
+// Componentes primeng
 import { DialogModule } from 'primeng/dialog';
 import { TimelineModule } from 'primeng/timeline';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 
+// Modelo de los datos del historial
 interface RegistroHistorial {
   created_at: string;
   nombres: string;
@@ -43,12 +44,15 @@ interface RegistroHistorial {
   styleUrls: ['./historial.css']
 })
 export class Historial {
-  @Input() visible = false;
-  @Input() historial: RegistroHistorial[] = [];
-  @Input() numeroSim = '';
+  // Entradas desde el componente padre
+  @Input() visible = false; // Muestra u oculta el modal
+  @Input() historial: RegistroHistorial[] = []; // Lista de cambios
+  @Input() numeroSim = ''; // Numero de SIM consultado
 
+  // Salida para avisar al padre
   @Output() cerrar = new EventEmitter<void>();
 
+  // Cierra la ventana modal
   cerrarModal(): void {
     this.cerrar.emit();
   }

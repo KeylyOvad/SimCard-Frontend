@@ -1,16 +1,18 @@
+<!-- Encabezado superior -->
 <app-header></app-header>
 
 <div class="page-container">
-  <!-- Encabezado de sección -->
+  
+  <!-- Titulo principal de la pagina -->
   <header class="page-header">
     <h1>Sim Cards CENS</h1>
     <p>Gestión de tarjetas SIM</p>
   </header>
 
-  <!-- Carrusel Informativo -->
+  <!-- Carrusel de imagenes -->
   <app-carrusel></app-carrusel>
 
-  <!-- Sección Tarjetas de Estadísticas -->
+  <!-- Tarjetas con las estadisticas -->
   <section class="stats">
     <div class="stat-card">
       <div class="card-icon-wrapper">
@@ -43,7 +45,7 @@
     </div>
   </section>
 
-  <!-- Tabla Principal de SIMs PrimeNG -->
+  <!-- Tabla de tarjetas SIM -->
   <p-table
     #dt
     [value]="simCards"
@@ -54,10 +56,11 @@
     [showGridlines]="true"
     styleClass="p-datatable-striped cens-card-table"
   >
-    <!-- Caption con Buscador y Acciones -->
+  
+    <!-- Encabezado de la tabla y buscador -->
     <ng-template pTemplate="caption">
       <div class="table-header-actions">
-        <!-- Buscador Global -->
+        <!-- Campo de busqueda -->
         <p-iconfield iconPosition="left" class="search-field">
           <p-inputicon styleClass="pi pi-search"></p-inputicon>
           <input
@@ -70,7 +73,7 @@
           />
         </p-iconfield>
 
-        <!-- Grupo de Botones de Acción -->
+        <!-- Botones de accion principal -->
         <div class="actions-right-group">
           <p-button
             *ngIf="puedeModificar"
@@ -98,7 +101,7 @@
       </div>
     </ng-template>
 
-    <!-- Encabezados de Columna -->
+    <!-- Titulos de las columnas con ordenamiento -->
     <ng-template pTemplate="header">
       <tr>
         <th pSortableColumn="num_linea">Nº Línea <p-sortIcon field="num_linea"></p-sortIcon></th>
@@ -113,7 +116,7 @@
       </tr>
     </ng-template>
 
-    <!-- Filas de Datos -->
+    <!-- Filas de datos de la tabla -->
     <ng-template pTemplate="body" let-sim>
       <tr>
         <td><strong>{{ sim.num_linea }}</strong></td>
@@ -124,7 +127,7 @@
         <td>{{ sim.responsable }}</td>
         <td>{{ sim.destino }}</td>
 
-        <!-- Estado con Badge/Tag uniforme -->
+        <!-- Estado de la SIM -->
         <td class="text-center">
           <span
             class="status-badge"
@@ -135,7 +138,7 @@
           </span>
         </td>
 
-        <!-- Acciones -->
+        <!-- Botones de accion por fila -->
         <td class="col-acciones">
           <div class="actions-wrapper">
             <button
@@ -171,7 +174,7 @@
       </tr>
     </ng-template>
 
-    <!-- Estado vacío -->
+    <!-- Mensaje cuando la tabla esta vacia -->
     <ng-template pTemplate="emptymessage">
       <tr>
         <td colspan="9" class="p-4 text-center">
@@ -182,7 +185,7 @@
   </p-table>
 </div>
 
-<!-- Modal Component Historial -->
+<!-- Modal emergente para ver el historial -->
 <app-historial
   [visible]="mostrarModalHistorial"
   [historial]="historialSim"

@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
 
-// Importaciones de PrimeNG
+// Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,6 +14,7 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+// Estructura de datos para operador
 export interface OperadorItem {
   id_operador?: number;
   descripcion: string;
@@ -38,13 +39,16 @@ export interface OperadorItem {
   styleUrls: ['./operadores.css']
 })
 export class Operadores implements OnInit {
+  // Ruta de la API para operadores
   private readonly apiUrl = 'http://localhost:3000/api/operadores';
 
+  // Variables de control y listas
   modalAbierto = false;
   operadores: OperadorItem[] = [];
   operadorEditando: OperadorItem | null = null;
   puedeModificar = false;
 
+  // Objeto para el formulario
   nuevoOperador: OperadorItem = { descripcion: '' };
 
   constructor(
@@ -54,10 +58,12 @@ export class Operadores implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Revisa si es administrador y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarOperadores();
   }
 
+  // Trae los operadores desde el servidor
   cargarOperadores() {
     this.http.get<OperadorItem[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -70,17 +76,20 @@ export class Operadores implements OnInit {
     });
   }
 
+  // Abre el modal para crear operador
   abrirModal() {
     if (!this.puedeModificar) return; 
     this.resetForm();
     this.modalAbierto = true;
   }
 
+  // Cierra el modal y limpia campos
   cerrarModal() {
     this.modalAbierto = false;
     this.resetForm();
   }
 
+  // Carga datos de un operador en el modal para editar
   editarOperador(operador: OperadorItem) {
     if (!this.puedeModificar) return; 
     this.operadorEditando = operador;
@@ -88,6 +97,7 @@ export class Operadores implements OnInit {
     this.modalAbierto = true;
   }
 
+  // Elimina un operador
   eliminarOperador(operador: OperadorItem) {
     if (!this.puedeModificar || !operador.id_operador) return; 
     if (!confirm(`¿Eliminar operador: ${operador.descripcion}?`)) return;
@@ -102,6 +112,7 @@ export class Operadores implements OnInit {
     });
   }
 
+  // Guarda o actualiza la informacion del operador
   guardarOperador() {
     if (!this.puedeModificar) return; 
 
@@ -114,6 +125,7 @@ export class Operadores implements OnInit {
     const payload = { descripcion: descLimpia };
 
     if (!this.operadorEditando) {
+      // Registrar nuevo operador
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarOperadores();
@@ -126,6 +138,7 @@ export class Operadores implements OnInit {
         }
       });
     } else {
+      // Actualizar operador existente
       const id = this.operadorEditando.id_operador;
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
@@ -141,6 +154,7 @@ export class Operadores implements OnInit {
     }
   }
 
+  // Restablece el formulario a valores iniciales
   resetForm() {
     this.nuevoOperador = { descripcion: '' };
     this.operadorEditando = null;

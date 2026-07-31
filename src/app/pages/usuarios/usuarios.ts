@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Header } from '../../shared/header/header';
 import { AuthService } from '../../services/auth.service';
 
-// Módulos PrimeNG v21
+// Modulos PrimeNG v21
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -35,14 +35,17 @@ import { SelectModule } from 'primeng/select';
   styleUrls: ['./usuarios.css']
 })
 export class UsuariosComponent implements OnInit {
+  // Ruta de la API
   private apiUrl = 'http://localhost:3000/api/usuarios';
 
+  // Variables de control y listas
   searchText = '';
   modalAbierto = false;
   usuarios: any[] = [];
   usuarioEditando: any = null;
   puedeModificar = false;
 
+  // Opciones para selectores
   opcionesEstado = [
     { label: 'Activo', value: 'Activo' },
     { label: 'Inactivo', value: 'Inactivo' }
@@ -53,6 +56,7 @@ export class UsuariosComponent implements OnInit {
     { label: 'Usuario', value: 2 }
   ];
 
+  // Objeto para el formulario
   nuevoUsuario = {
     nombres: '',
     apellidos: '',
@@ -70,10 +74,12 @@ export class UsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Verifica rol de administrador y carga lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarUsuarios();
   }
 
+  // Trae los usuarios desde el servidor
   cargarUsuarios() {
     this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -87,38 +93,63 @@ export class UsuariosComponent implements OnInit {
             rolTexto: Number(u.id_rol) === 1 ? 'Administrador' : 'Usuario'
           };
         });
-        this.cd.detectChanges();
+        
+        // Forma segura de notificar cambios
+        this.cd.markForCheck();
       },
       error: (err) => console.error('Error al cargar usuarios:', err)
     });
   }
 
+  // Abre el modal para crear usuario
   abrirModal() {
     if (!this.puedeModificar) return;
     this.resetForm();
-    this.modalAbierto = true;
+    
+    // Programado en microtarea para diferir el cambio de estado de la UI
+    Promise.resolve().then(() => {
+      this.modalAbierto = true;
+      this.cd.markForCheck();
+    });
   }
 
+  // Cierra el modal y limpia campos
   cerrarModal() {
     this.modalAbierto = false;
-    this.resetForm();
+
+    // Resetea valores en la siguiente microtarea
+    Promise.resolve().then(() => {
+      this.resetForm();
+      this.cd.markForCheck();
+    });
   }
 
+  // Carga datos de un usuario en el modal para editar
   editarUsuario(usuario: any) {
     if (!this.puedeModificar) return;
     this.usuarioEditando = usuario;
+
+    // Normaliza el estado a string exacto
+    const esActivo = usuario.estado === 1 || usuario.estado === '1' || usuario.estado === 'Activo';
+
     this.nuevoUsuario = {
-      nombres: usuario.nombres,
-      apellidos: usuario.apellidos,
-      correo: usuario.correo,
+      nombres: usuario.nombres || '',
+      apellidos: usuario.apellidos || '',
+      correo: usuario.correo || '',
       contrasena: '',
       confirmar: '',
-      estado: usuario.estado,
+      estado: esActivo ? 'Activo' : 'Inactivo',
       id_rol: Number(usuario.id_rol)
     };
-    this.modalAbierto = true;
+
+    // Abre el modal de forma asíncrona segura
+    Promise.resolve().then(() => {
+      this.modalAbierto = true;
+      this.cd.markForCheck();
+    });
   }
 
+  // Elimina o inactiva un usuario
   eliminarUsuario(usuario: any) {
     if (!this.puedeModificar) return;
     if (!confirm(`¿Está seguro de inactivar o eliminar a ${usuario.nombreCompleto}?`)) return;
@@ -132,6 +163,7 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
+  // Guarda o actualiza la informacion del usuario
   guardarUsuario() {
     if (!this.puedeModificar) {
       alert('Acción no permitida.');
@@ -146,7 +178,7 @@ export class UsuariosComponent implements OnInit {
       return;
     }
 
-    // Convertimos el estado a valor numérico/booleano según requiera la base de datos
+    // Estado en formato numerico para BD (1 = Activo, 0 = Inactivo)
     const estadoValor = this.nuevoUsuario.estado === 'Activo' ? 1 : 0;
 
     const payload: any = {
@@ -158,7 +190,7 @@ export class UsuariosComponent implements OnInit {
     };
 
     if (!this.usuarioEditando) {
-      // --- CREACIÓN ---
+      // Registrar nuevo usuario
       if (!this.nuevoUsuario.contrasena) {
         alert('La contraseña es obligatoria para nuevos usuarios.');
         return;
@@ -173,16 +205,15 @@ export class UsuariosComponent implements OnInit {
 
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
-          this.cargarUsuarios();
           this.cerrarModal();
+          this.cargarUsuarios();
         },
         error: (err) => alert(err.error?.message || 'Error al crear el usuario.')
       });
 
     } else {
-      // --- EDICIÓN ---
-      // Solo enviamos contraseña si el administrador decidió cambiarla
-      if (this.nuevoUsuario.contrasena.trim() !== '') {
+      // Actualizar usuario existente
+      if (this.nuevoUsuario.contrasena && this.nuevoUsuario.contrasena.trim() !== '') {
         if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
           alert('Las contraseñas no coinciden.');
           return;
@@ -192,14 +223,15 @@ export class UsuariosComponent implements OnInit {
 
       this.http.put(`${this.apiUrl}/${this.usuarioEditando.id_usuario}`, payload).subscribe({
         next: () => {
-          this.cargarUsuarios();
           this.cerrarModal();
+          this.cargarUsuarios();
         },
         error: (err) => alert(err.error?.message || 'Error al actualizar el usuario.')
       });
     }
   }
 
+  // Restablece el formulario a valores iniciales
   resetForm() {
     this.nuevoUsuario = {
       nombres: '',

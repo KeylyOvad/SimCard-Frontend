@@ -22,7 +22,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error) => {
 
-      if (error.status === 401) {
+      //  Solo redirige si es 401 Y NO es la petición de inicio de sesión
+      if (error.status === 401 && !req.url.includes('/login')) {
         console.warn('Sesión expirada o no autorizada');
 
         authService.logout();
@@ -30,6 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         router.navigate(['/login']);
       }
 
+      // Deja pasar el error para que el LoginComponent lo capture en su .subscribe
       return throwError(() => error);
     })
   );

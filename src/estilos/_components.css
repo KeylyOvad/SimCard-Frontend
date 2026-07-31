@@ -1,8 +1,6 @@
-/* ==========================================================================
-   SISTEMA DE DISEÑO CENS - COMPONENTES GLOBALES
-   ========================================================================== */
 
-/* --- 1. ESTRUCTURA Y CONTENEDOR DE PÁGINA --- */
+
+/* Contenedor principal de la pagina */
 .page-container {
   padding: 2rem;
   background-color: #f8fafc;
@@ -10,6 +8,7 @@
   width: 100%;
 }
 
+/* Titulos de encabezado */
 .page-header h1,
 .header h1 {
   margin: 0;
@@ -18,6 +17,7 @@
   font-weight: 700;
 }
 
+/* Subtitulos y descripciones */
 .page-header p,
 .header p {
   color: #64748b;
@@ -25,7 +25,9 @@
   margin-bottom: 1.5rem;
 }
 
-/* --- 2. TABLA Y TARJETA GLOBAL --- */
+/* . TABLA Y TARJETA GLOBAL */
+
+/* Contenedor de las tablas principales */
 .p-datatable.usuarios-card-table,
 .p-datatable.cens-card-table {
   background: #ffffff;
@@ -37,7 +39,7 @@
   table-layout: auto;
 }
 
-/* Cabecera y botón principal sobre la tabla */
+/* Barra superior de la tabla (buscador y boton) */
 .table-header-actions {
   display: flex;
   justify-content: space-between;
@@ -47,6 +49,7 @@
   background: #ffffff;
 }
 
+/* Boton primario personalizado CENS */
 .btn-primary-cens {
   background-color: var(--cens-primary) !important;
   border-color: var(--cens-primary) !important;
@@ -56,7 +59,7 @@
   border-radius: 8px !important;
 }
 
-/* Encabezado Verde */
+/* Encabezado verde de las tablas */
 .p-datatable .p-datatable-thead > tr > th {
   background-color: var(--cens-bg-light) !important;
   color: var(--cens-primary-dark) !important;
@@ -65,62 +68,68 @@
   border-bottom: 2px solid var(--cens-border-light) !important;
 }
 
+/* Iconos de ordenamiento en las columnas */
 .p-datatable .p-datatable-thead > tr > th .p-sortable-column-icon {
   color: var(--cens-primary-dark) !important;
 }
 
+/* Celdas del cuerpo de la tabla */
 .p-datatable .p-datatable-tbody > tr > td {
   padding: 0.9rem 1.25rem !important;
   border-bottom: 1px solid #f1f5f9 !important;
 }
 
-/* Filas intercaladas (Zebra Stripe) */
+/* Filas intercaladas de color gris */
 .p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
   background-color: #f1f5f9 !important;
 }
 
-/* Líneas divisoras verticales */
+/* Lineas divisoras verticales en la tabla */
 .p-datatable-gridlines .p-datatable-thead > tr > th,
 .p-datatable-gridlines .p-datatable-tbody > tr > td {
   border-right: 1px solid #e2e8f0 !important;
 }
 
+/* Quita la linea derecha en la ultima columna */
 .p-datatable-gridlines .p-datatable-thead > tr > th:last-child,
 .p-datatable-gridlines .p-datatable-tbody > tr > td:last-child {
   border-right: none !important;
 }
 
-/* --- 3. ALINEACIONES Y ANCHOS EXACTOS --- */
+/* ALINEACIONES Y ANCHOS EXACTOS */
 
-/* ID: Ancho justo y bien centrado */
+/* Columna ID centrada */
 .col-id {
   width: 90px !important;
   text-align: center !important;
 }
 
-/* Descripción: Alineado natural a la izquierda */
+/* Columna Descripcion alineada a la izquierda */
 .col-descripcion {
   text-align: left !important;
 }
 
-/* Fuerza al contenedor interno de PrimeNG (texto + flechas) a pegarse a la izquierda */
+/* Alinea texto y flechas a la izquierda */
 .col-descripcion .p-column-header-content {
   justify-content: flex-start !important;
 }
 
-/* Acciones: Ancho justo y botones centrados */
+/* Columna Acciones centrada */
 .col-acciones {
   width: 140px !important;
   text-align: center !important;
 }
 
-/* --- 4. PAGINACIÓN GLOBAL --- */
+/* PAGINACIÓN GLOBAL*/
+
+/* Barra del paginador */
 .p-datatable .p-paginator {
   background-color: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
   padding: 0.75rem 1rem !important;
 }
 
+/* Pagina seleccionada en el paginador */
 .p-datatable .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
   background-color: var(--cens-bg-light) !important;
   color: var(--cens-primary) !important;
@@ -128,24 +137,29 @@
   font-weight: 700 !important;
 }
 
-/* --- 5. MODAL GLOBAL --- */
+/*  MODAL GLOBAL  */
+
+/* Ventana modal */
 .p-dialog.modal-custom-cens {
   border-radius: 16px !important;
   overflow: hidden;
   border: none !important;
 }
 
+/* Cabecera del modal con degradado */
 .p-dialog.modal-custom-cens .p-dialog-header {
   background: linear-gradient(135deg, var(--cens-success), var(--cens-primary-dark)) !important;
   color: #ffffff !important;
 }
 
+/* Contenedor del titulo del modal */
 .modal-header-custom {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Titulo del modal */
 .modal-header-custom h3 {
   margin: 0;
   color: #ffffff;
@@ -153,6 +167,7 @@
   font-weight: 700;
 }
 
+/* Formulario en el modal */
 .dialog-form {
   display: flex;
   flex-direction: column;
@@ -160,18 +175,21 @@
   padding-top: 0.5rem;
 }
 
+/* Contenedor de campo e etiqueta */
 .field {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
+/* Etiquetas de los campos */
 .field label {
   font-size: 0.85rem;
   font-weight: 600;
   color: #334155;
 }
 
+/* Pie del modal con los botones */
 .modal-footer-custom {
   display: flex;
   justify-content: center;
@@ -179,6 +197,7 @@
   width: 100%;
 }
 
+/* Boton guardar verde */
 .btn-guardar-custom {
   background-color: var(--cens-success);
   color: #ffffff;
@@ -190,6 +209,7 @@
   cursor: pointer;
 }
 
+/* Boton cancelar rojo */
 .btn-cancelar-custom {
   background-color: var(--cens-danger);
   color: #ffffff;
@@ -201,7 +221,9 @@
   cursor: pointer;
 }
 
-/* --- 6. BOTONES DE ACCIONES --- */
+/* BOTONES DE ACCIONES  */
+
+/* Agrupador de botones en la tabla */
 .actions-wrapper {
   display: flex;
   justify-content: center;
@@ -210,6 +232,7 @@
   width: 100%;
 }
 
+/* Boton transparente generico */
 .btn-action {
   background: transparent !important;
   border: none !important;
@@ -218,17 +241,21 @@
   border-radius: 6px !important;
 }
 
+/* Boton editar azul y efecto hover */
 .btn-action.edit { color: #0284c7 !important; }
 .btn-action.edit:hover { background-color: #e0f2fe !important; }
 
+/* Boton eliminar rojo y efecto hover */
 .btn-action.delete { color: var(--cens-danger) !important; }
 .btn-action.delete:hover { background-color: #fee2e2 !important; }
 
-/* --- 7. BUSCADOR --- */
+/* BUSCADOR  */
+
+/* Ancho del campo de busqueda */
 .search-field {
   width: 100%;
   max-width: 380px;
 }
 
+/* Clase utilitaria para ancho completo */
 .w-full { width: 100% !important; }
-

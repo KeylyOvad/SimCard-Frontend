@@ -1,3 +1,4 @@
+<!-- Ventana emergente (Modal) -->
 <p-dialog
   [(visible)]="visible"
   [modal]="true"
@@ -6,7 +7,7 @@
   styleClass="modal-custom-cens modal-historial-cens"
   (onHide)="cerrarModal()"
 >
-  <!-- Encabezado del Modal -->
+  <!-- Encabezado del modal -->
   <ng-template pTemplate="header">
     <div class="modal-header-custom">
       <i class="pi pi-history"></i>
@@ -14,17 +15,20 @@
     </div>
   </ng-template>
 
-  <!-- Contenido -->
+  <!-- Cuerpo del modal -->
   <div class="modal-historial-body">
+    <!-- Si hay historial, muestra la lista. Si no, muestra el mensaje vacio -->
     <div *ngIf="historial && historial.length > 0; else noHistory">
       
+      <!-- Lista de registros de cambios -->
       <div class="card-historial-item" *ngFor="let h of historial">
-        <!-- Encabezado Verde del Reporte -->
+        <!-- Fecha y usuario que modifico -->
         <div class="historial-report-header">
           <span><i class="pi pi-calendar"></i> MODIFICACIÓN DEL: <strong>{{ h.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</strong></span>
           <span><i class="pi pi-user"></i> MODIFICADO POR: <strong>{{ h.nombres }} {{ h.apellidos }}</strong></span>
         </div>
 
+        <!-- Tabla con los datos de la SIM -->
         <div class="historial-grid">
           <div class="grid-item">
             <span class="label">Número SIM</span>
@@ -82,7 +86,7 @@
           </div>
         </div>
 
-        <!-- Cajas de Observaciones -->
+        <!-- Observaciones y motivo del cambio -->
         <div class="historial-obs-container">
           <div class="obs-card">
             <span class="obs-title">Observación del Ítem</span>
@@ -99,7 +103,7 @@
 
     </div>
 
-  
+    <!-- Mensaje cuando no existe historial -->
     <ng-template #noHistory>
       <div class="empty-historial">
         <i class="pi pi-history"></i>
@@ -109,6 +113,7 @@
     </ng-template>
   </div>
 
+  <!-- Pie del modal con boton de cerrar -->
   <ng-template pTemplate="footer">
     <div class="modal-footer-custom">
       <button class="btn-guardar-custom" (click)="cerrarModal()">

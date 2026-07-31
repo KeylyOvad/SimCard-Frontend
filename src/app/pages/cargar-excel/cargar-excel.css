@@ -1,4 +1,28 @@
+/* --- CONTENEDOR GENERAL --- */
+.page-container {
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
 
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  color: var(--cens-primary-dark, #005e2b);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.page-header p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* --- TARJETA PRINCIPAL DE CARGA --- */
 .upload-card {
   background: #ffffff;
   padding: 28px;
@@ -15,6 +39,7 @@
   color: #334155;
 }
 
+/* --- ZONA DROPZONE --- */
 .dropzone-area {
   border: 2px dashed #cbd5e1;
   background: #f8fafc;
@@ -23,6 +48,7 @@
   text-align: center;
   transition: all 0.2s ease;
   position: relative;
+  cursor: pointer;
 }
 
 .dropzone-area:hover, 
@@ -61,6 +87,7 @@
   color: #94a3b8;
 }
 
+/* --- BADGE DE ARCHIVO SELECCIONADO --- */
 .selected-file-badge {
   display: flex;
   align-items: center;
@@ -75,6 +102,12 @@
   font-weight: 600;
 }
 
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .btn-clear-file {
   background: transparent;
   border: none;
@@ -84,9 +117,84 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: opacity 0.2s ease;
 }
 
-/*ESTADO DE CARGA & RESULTADOS */
+.btn-clear-file:hover {
+  opacity: 0.7;
+}
+
+/* --- CONSOLA Y ESTADOS DE PROCESAMIENTO --- */
+.procesamiento-visible {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.alerta-advertencia {
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  color: #856404;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 13.5px;
+}
+
+.lista-pasos {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  line-height: 2;
+  font-size: 14px;
+  color: #334155;
+}
+
+.progreso-wrapper {
+  width: 100%;
+  background-color: #e2e8f0;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.barra-progreso-fill {
+  background-color: #00a859;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.consola-terminal {
+  background-color: #1a202c;
+  border-radius: 6px;
+  height: 140px;
+  overflow-y: auto;
+  padding: 12px;
+  font-family: monospace;
+  font-size: 12.5px;
+  color: #e2e8f0;
+}
+
+/* --- BOTÓN DE ACCIÓN (PRIMENG) --- */
+.button-container {
+  margin-top: 20px;
+}
+
+:host ::ng-template .btn-primary-cens {
+  background-color: #00a859 !important;
+  border-color: #00a859 !important;
+  border-radius: 8px !important;
+  padding: 0.75rem 1.75rem !important;
+  font-weight: 600 !important;
+  width: 100%;
+}
+
+:host ::ng-template .btn-primary-cens:hover {
+  background-color: #008f4c !important;
+  border-color: #008f4c !important;
+}
+
+/* --- ESTADO DE CARGA Y RESULTADOS --- */
 .loading-container {
   margin-top: 24px;
   text-align: center;
@@ -101,7 +209,6 @@
   border-left: 5px solid var(--cens-success, #10b981); 
   border-radius: 8px;
   padding: 18px 20px;
-  margin-top: 24px;
 }
 
 .result-box-title {
@@ -128,6 +235,7 @@
 .metric-pill.text-success { color: #16a34a; }
 .metric-pill.text-warning { color: #d97706; }
 
+/* --- TABLA DE ERRORES --- */
 .section-table-title {
   font-size: 17px;
   font-weight: 700;

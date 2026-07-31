@@ -1,8 +1,6 @@
-/* Header Principal */
-/* Header Principal con degradado neón/brillante */
+/* Header principal con degradado verde */
 .top-bar {
   height: 60px;
-  /* Verde esmeralda neón hacia un verde lima vibrante */
   background: linear-gradient(90deg, #10b981, #22c55e);
   color: white;
   display: flex;
@@ -11,26 +9,27 @@
   padding: 0 24px;
 }
 
-/* Para el texto del enlace activo y el avatar */
+/* Enlace activo y avatar */
 nav a.active, .avatar {
   background: #ffffff;
-  color: #10b981; /* O puedes usar #059669 si quieres un poquitico más de contraste */
+  color: #10b981;
   font-weight: 700;
 }
 
-/* Flexbox agrupado para la izquierda y el usuario */
+/* Agrupacion de elementos con flexbox */
 .top-left, nav, .user-menu {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+/* Imagen del logo */
 .logo {
   height: 48px;
   object-fit: contain;
 }
 
-/* Menú de Navegación */
+/* Menu de navegacion */
 nav a {
   color: white;
   padding: 8px 16px;
@@ -40,10 +39,12 @@ nav a {
   transition: background 0.2s;
 }
 
+/* Efecto hover en enlaces y usuario */
 nav a:hover, .user-menu:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* Enlace seleccionado en el menu */
 nav a.active {
   background: #ffffff;
   color: #00875a;
@@ -51,7 +52,7 @@ nav a.active {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-/* Usuario / Avatar */
+/* Contenedor del usuario */
 .user-menu {
   position: relative;
   cursor: pointer;
@@ -59,6 +60,7 @@ nav a.active {
   border-radius: 12px;
 }
 
+/* Icono circular del avatar */
 .avatar {
   width: 34px;
   height: 34px;
@@ -70,16 +72,18 @@ nav a.active {
   font-weight: 700;
 }
 
+/* Texto con el nombre de usuario */
 .user-name {
   font-weight: 600;
   font-size: 14px;
 }
 
+/* Flecha del desplegable */
 .arrow {
   font-size: 11px;
 }
 
-/* Menú desplegable */
+/* Menu flotante del usuario */
 .dropdown {
   position: absolute;
   top: 120%;
@@ -93,7 +97,7 @@ nav a.active {
   z-index: 1000;
 }
 
-/* Botón de Cerrar Sesión */
+/* Boton para cerrar sesion */
 .custom-btn-logout {
   width: 100%;
   display: flex;
@@ -110,6 +114,7 @@ nav a.active {
   transition: background 0.2s;
 }
 
+/* Efecto hover en boton cerrar sesion */
 .custom-btn-logout:hover {
   background: #fde8e8;
 }

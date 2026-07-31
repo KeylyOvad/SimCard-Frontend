@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // <--- 1. Importar ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -10,7 +10,7 @@ import { Header } from '../../shared/header/header';
 import { CarruselComponent } from '../carrusel/carrusel';
 import { Historial } from '../historial/historial';
 
-// Módulos UI de PrimeNG
+// Componentes visuales
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -37,25 +37,32 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrls: ['./home.css'],
 })
 export class Home implements OnInit {
+  // Lista de tarjetas SIM
   simCards: Sim[] = [];
+  
+  // Permisos de edición
   puedeModificar = false;
 
+  // Variables para el modal de historial
   mostrarModalHistorial = false;
   historialSim: any[] = [];
   simSeleccionadaNumero = '';
 
+  // Conteo para las tarjetas de inicio
   stats = { total: 0, claro: 0, movistar: 0, operators: 0 };
 
   constructor(
     private router: Router,
     private simService: SimService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef // <--- 2. Inyectar ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    // Revisa si el usuario es administrador
     this.puedeModificar = this.authService.esAdmin();
 
-    // ⚡ 1. Carga INSTANTÁNEA desde caché para eliminar el "0"
+    // Carga datos guardados previamente si existen
     const cacheData = localStorage.getItem('simCards_cache');
     if (cacheData) {
       try {
@@ -66,42 +73,51 @@ export class Home implements OnInit {
       }
     }
 
-    // ⚡ 2. Carga en segundo plano para actualizar los datos reales
+    // Trae los datos actualizados del servidor
     this.obtenerSims();
   }
 
+  // Pide la lista de SIMs al backend
   obtenerSims(): void {
     this.simService.getSims().subscribe({
       next: (data: Sim[]) => {
         this.simCards = data;
         this.calcularStats();
         
-        // Guardar la última respuesta en caché para la próxima visita
+        // Guarda en caché
         localStorage.setItem('simCards_cache', JSON.stringify(data));
+
+        // <--- 3. Forzamos a Angular a actualizar la interfaz inmediatamente
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al traer SIMS:', err)
     });
   }
 
+  // Calcula el total por operador
   calcularStats(): void {
     this.stats.total = this.simCards.length;
 
+    // Cuenta Claro
     this.stats.claro = this.simCards.filter(s => {
       const opText = s.operador?.toString().toLowerCase() || '';
       const opId = Number(s.id_operador || s.operadorId);
       return opId === 1 || opText.includes('claro');
     }).length;
 
+    // Cuenta Movistar
     this.stats.movistar = this.simCards.filter(s => {
       const opText = s.operador?.toString().toLowerCase() || '';
       const opId = Number(s.id_operador || s.operadorId);
       return opId === 2 || opText.includes('movistar');
     }).length;
 
+    // Total de operadores diferentes
     const operadoresUnicos = new Set(this.simCards.map(s => s.operador || s.id_operador));
     this.stats.operators = operadoresUnicos.size;
   }
 
+  // Descarga el reporte en Excel
   generateReport(): void {
     this.simService.descargarReporteExcel().subscribe({
       next: (archivoBlob: Blob) => {
@@ -133,12 +149,14 @@ export class Home implements OnInit {
     });
   }
 
+  // Va al formulario para editar la SIM
   editSim(sim: Sim): void { 
     if (sim.id_sim) {
       this.router.navigate(['/sim-form', sim.id_sim]);
     } 
   }
 
+  // Elimina una tarjeta SIM
   deleteSim(sim: Sim): void {
     const idABorrar = sim.id_sim;
     if (!idABorrar) { 
@@ -157,6 +175,7 @@ export class Home implements OnInit {
     }
   }
 
+  // Abre el modal con el historial
   verHistorial(sim: Sim): void {
     const idSim = sim.id_sim;
     if (!idSim) return;
@@ -166,14 +185,17 @@ export class Home implements OnInit {
       next: (data) => {
         this.historialSim = data;
         this.mostrarModalHistorial = true;
+        this.cdr.detectChanges(); // <--- También actualizamos al abrir el modal
       },
       error: () => alert('Error al cargar historial.')
     });
   }
 
+  // Cierra el modal de historial
   cerrarHistorial(): void {
     this.mostrarModalHistorial = false;
     this.historialSim = [];
     this.simSeleccionadaNumero = '';
+    this.cdr.detectChanges();
   }
 }

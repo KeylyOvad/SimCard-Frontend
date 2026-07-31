@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
 
-// Importaciones de PrimeNG
+// Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -14,6 +14,7 @@ import { DialogModule } from 'primeng/dialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 
+// Estructura de datos para destino
 export interface DestinoItem {
   id_destino?: number;
   descripcion: string;
@@ -38,14 +39,16 @@ export interface DestinoItem {
   styleUrls: ['./destinos.css']
 })
 export class Destino implements OnInit {
-  // Centralizamos la URL del backend aquí
+  // Ruta base del servidor
   private readonly apiUrl = 'http://localhost:3000/api/destinos';
 
+  // Variables de control y datos
   modalAbierto = false;
   destinos: DestinoItem[] = [];
   destinoEditando: DestinoItem | null = null;
   puedeModificar = false;
 
+  // Objeto para el formulario
   nuevoDestino: DestinoItem = { descripcion: '' };
 
   constructor(
@@ -55,10 +58,12 @@ export class Destino implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Revisa si es admin y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarDestinos();
   }
 
+  // Trae los destinos desde la API
   cargarDestinos() {
     this.http.get<DestinoItem[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -69,17 +74,20 @@ export class Destino implements OnInit {
     });
   }
 
+  // Abre el modal para crear
   abrirModal() {
     if (!this.puedeModificar) return;
     this.resetForm();
     this.modalAbierto = true;
   }
 
+  // Cierra el modal y limpia el formulario
   cerrarModal() {
     this.modalAbierto = false;
     this.resetForm();
   }
 
+  // Carga los datos en el modal para editar
   editarDestino(dest: DestinoItem) {
     if (!this.puedeModificar) return;
     this.destinoEditando = dest;
@@ -87,6 +95,7 @@ export class Destino implements OnInit {
     this.modalAbierto = true;
   }
 
+  // Elimina un destino
   eliminarDestino(dest: DestinoItem) {
     if (!this.puedeModificar || !dest.id_destino) return;
     if (!confirm(`¿Eliminar el destino: ${dest.descripcion}?`)) return;
@@ -101,6 +110,7 @@ export class Destino implements OnInit {
     });
   }
 
+  // Guarda o actualiza un destino
   guardarDestino() {
     if (!this.puedeModificar) return;
 
@@ -112,6 +122,7 @@ export class Destino implements OnInit {
 
     const payload = { descripcion: descLimpia };
 
+    // Si es un destino nuevo
     if (!this.destinoEditando) {
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
@@ -125,6 +136,7 @@ export class Destino implements OnInit {
         }
       });
     } else {
+      // Si se esta editando uno existente
       const id = this.destinoEditando.id_destino;
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
@@ -140,6 +152,7 @@ export class Destino implements OnInit {
     }
   }
 
+  // Limpia los datos del formulario
   resetForm() {
     this.nuevoDestino = { descripcion: '' };
     this.destinoEditando = null;

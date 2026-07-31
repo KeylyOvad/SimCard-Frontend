@@ -10,6 +10,7 @@ import { CarouselModule } from 'primeng/carousel';
   styleUrls: ['./carrusel.css']
 })
 export class CarruselComponent {
+  // Lista de imagenes y datos para el carrusel
   carouselImages = [
     {
       url: 'assets/autogenerador.png',

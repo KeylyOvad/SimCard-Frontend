@@ -1,15 +1,16 @@
-
+/* Layout en grilla de 2 columnas */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
+/* Margen superior pequeno */
 .mt-3 {
   margin-top: 0.85rem;
 }
 
-
+/* Estilo para el boton de guardar cuando esta deshabilitado */
 .btn-guardar-custom:disabled {
   background-color: #00b875 !important; 
   color: white !important;

@@ -24,7 +24,7 @@
       <div class="card-historial-item" *ngFor="let h of historial">
         <!-- Fecha y usuario que modifico -->
         <div class="historial-report-header">
-          <span><i class="pi pi-calendar"></i> MODIFICACIÓN DEL: <strong>{{ h.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</strong></span>
+         <span><i class="pi pi-calendar"></i> MODIFICACIÓN DEL: <strong>{{ h.created_at | date:'yyyy-MM-dd hh:mm:ss a' }}</strong></span>
           <span><i class="pi pi-user"></i> MODIFICADO POR: <strong>{{ h.nombres }} {{ h.apellidos }}</strong></span>
         </div>
 

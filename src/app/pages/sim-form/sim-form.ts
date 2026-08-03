@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -15,29 +15,29 @@ import { SimService } from '../../services/sim.service';
   styleUrls: ['./sim-form.css']
 })
 export class SimForm implements OnInit {
-  // Variables principales del formulario
   sim: Record<string, any> = {};
   nuevaIp = '';
   nuevoApn = '';
   data$!: Observable<any>;
   
-  // Modos de vista
   isEdit = false;
   idSim: string | null = null;
 
   constructor(
     private simService: SimService,
     private router: Router,
-    private route: ActivatedRoute 
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef // Injectamos el detector de cambios
   ) {}
 
   ngOnInit(): void {
-    // Inicializa formulario y carga listas desplegables
     this.resetForm();
-    this.cargarSelects();
     this.idSim = this.route.snapshot.paramMap.get('id');
     
-    // Si hay un ID en la ruta se cambia a modo edicion
+    // 1. Cargar las listas desplegables
+    this.cargarSelects();
+
+    // 2. Si es edición, cargar los datos de la SIM
     if (this.idSim) {
       this.isEdit = true;
       this.cargarDatosSim(this.idSim);
@@ -46,59 +46,48 @@ export class SimForm implements OnInit {
     }
   }
 
-  // Trae los datos de la SIM a editar
   cargarDatosSim(id: string): void {
     this.simService.getSimById(id).subscribe({
       next: (data: any) => {
+        // Asignación con conversión segura a String para evitar descalce con los select
         this.sim = {
           ...data, 
-          numeroSim: data.num_sim,
-          numeroLinea: data.num_linea,
-          pin: data.cod_pin,
-          puk: data.cod_puk,
-          tipoSimId: data.id_tiposim,
-          operadorId: data.id_operador,
-          planId: data.id_plan,
-          capacidadId: data.id_capacidad,
-          estadoId: data.id_estado,
-          responsableId: data.id_responsable,
-          ubicacionId: data.id_ubicacion,
-          destinoId: data.id_destino,
+          numeroSim: data.num_sim || data.numeroSim || '',
+          numeroLinea: data.num_linea || data.numeroLinea || '',
+          pin: data.cod_pin || data.pin || '',
+          puk: data.cod_puk || data.puk || '',
+          tipoSimId: data.id_tiposim != null ? String(data.id_tiposim) : '',
+          operadorId: data.id_operador != null ? String(data.id_operador) : '',
+          planId: data.id_plan != null ? String(data.id_plan) : '',
+          capacidadId: data.id_capacidad != null ? String(data.id_capacidad) : '',
+          estadoId: data.id_estado != null ? String(data.id_estado) : '',
+          responsableId: data.id_responsable != null ? String(data.id_responsable) : '',
+          ubicacionId: data.id_ubicacion != null ? String(data.id_ubicacion) : '',
+          destinoId: data.id_destino != null ? String(data.id_destino) : '',
           observacion: data.observacion || '', 
-          ip: data.ips || [],
-          apn: data.apns || [],
+          ip: data.ips || data.ip || [],
+          apn: data.apns || data.apn || [],
           razonModificacion: '' 
         };
+
+        // Forzamos a Angular a re-renderizar la vista con los nuevos datos al instante
+        this.cdr.detectChanges();
       },
       error: (err) => console.error("Error al cargar datos:", err)
     });
   }
 
-  // Limpia los campos del formulario
   resetForm(): void {
     this.sim = {
-      numeroSim: '', 
-      numeroLinea: '', 
-      pin: '', 
-      puk: '',
-      tipoSimId: '', 
-      operadorId: '', 
-      planId: '', 
-      capacidadId: '', 
-      estadoId: '',
-      responsableId: '', 
-      ubicacionId: '', 
-      destinoId: '',
-      ip: [], 
-      apn: [], 
-      observacion: '', 
-      razonModificacion: '' 
+      numeroSim: '', numeroLinea: '', pin: '', puk: '',
+      tipoSimId: '', operadorId: '', planId: '', capacidadId: '', estadoId: '',
+      responsableId: '', ubicacionId: '', destinoId: '',
+      ip: [], apn: [], observacion: '', razonModificacion: '' 
     };
     this.nuevaIp = '';
     this.nuevoApn = '';
   }
 
-  // Carga todas las listas desplegables al mismo tiempo
   cargarSelects(): void {
     this.data$ = forkJoin({
       operadores: this.simService.getOperadores(),
@@ -112,78 +101,62 @@ export class SimForm implements OnInit {
     });
   }
 
-  // Valida y agrega una IP a la lista
   agregarIp(): void {
     const ipLimpia = this.nuevaIp.trim();
     if (!ipLimpia) return;
-
-    // Regla para verificar formato de IP
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
     if (!ipRegex.test(ipLimpia)) {
       alert(`⚠️ La IP "${ipLimpia}" no tiene un formato válido.`);
       return;
     }
-
     if (!this.sim['ip']) this.sim['ip'] = [];
     if (this.sim['ip'].includes(ipLimpia)) {
       alert(`⚠️ La dirección IP "${ipLimpia}" ya está agregada.`);
       return;
     }
-
     this.sim['ip'].push(ipLimpia);
     this.nuevaIp = '';
   }
 
-  // Valida y agrega un APN a la lista
   agregarApn(): void {
     const apnLimpio = this.nuevoApn.trim();
     if (!apnLimpio) return;
-
-    // Regla para verificar formato de APN
     const apnRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9.-]+$/;
 
     if (!apnRegex.test(apnLimpio)) {
       alert(`⚠️ El APN "${apnLimpio}" no tiene un formato válido.`);
       return;
     }
-
     if (!this.sim['apn']) this.sim['apn'] = [];
     if (this.sim['apn'].includes(apnLimpio)) {
       alert(`⚠️ El APN "${apnLimpio}" ya está agregado.`);
       return;
     }
-
     this.sim['apn'].push(apnLimpio);
     this.nuevoApn = '';
   }
 
-  // Elimina una IP por su posicion
   eliminarIp(index: number): void { 
     if (this.sim['ip']) this.sim['ip'].splice(index, 1); 
   }
   
-  // Elimina un APN por su posicion
   eliminarApn(index: number): void { 
     if (this.sim['apn']) this.sim['apn'].splice(index, 1); 
   }
 
-  // Valida y guarda o actualiza la informacion
   guardar(): void {
-    // Valida razon al editar
     if (this.isEdit && (!this.sim['razonModificacion'] || this.sim['razonModificacion'].trim().length < 5)) {
       alert("⚠️ Debes ingresar una razón para la modificación (mínimo 5 caracteres).");
       return;
     }
 
-    // Valores por defecto para PIN y PUK
     let pinVal = this.sim['pin'] ? this.sim['pin'].toString().trim() : '';
     let pukVal = this.sim['puk'] ? this.sim['puk'].toString().trim() : '';
 
     if (pinVal === '') pinVal = '0000'; 
     if (pukVal === '') pukVal = '00000000'; 
   
-    // Validacion de digitos de PIN y PUK
     if (pinVal !== '0' && pinVal !== '0000' && pinVal.length !== 4) {
       alert("⚠️ El PIN debe tener 4 dígitos.");
       return;
@@ -196,7 +169,6 @@ export class SimForm implements OnInit {
     this.sim['pin'] = pinVal;
     this.sim['puk'] = pukVal;
 
-    // Actualiza o crea el registro segun el caso
     if (this.isEdit && this.idSim) {
       this.simService.updateSim(this.idSim, this.sim).subscribe({
         next: () => {
@@ -205,7 +177,7 @@ export class SimForm implements OnInit {
         },
         error: (err) => {
           console.error("Error al actualizar:", err);
-          const errorMsg = err.error?.error || err.error?.message || "La dirección IP o datos clave ya pertenecen a otro registro.";
+          const errorMsg = err.error?.error || err.error?.message || "Error al actualizar.";
           alert("⚠️ Error: " + errorMsg);
         }
       });
@@ -217,14 +189,13 @@ export class SimForm implements OnInit {
         },
         error: (err) => {
           console.error("Error al registrar:", err);
-          const errorMsg = err.error?.error || err.error?.message || "Comprueba que la dirección IP o el número de SIM no estén duplicados en el sistema.";
+          const errorMsg = err.error?.error || err.error?.message || "Error al registrar.";
           alert("⚠️ Error al registrar: " + errorMsg);
         }
       });
     }
   }
 
-  // Cancela y regresa al inicio
   cancelar(): void {
     this.router.navigate(['/home']); 
   }

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
+import { enviroment } from '../../../../environments/environment';
 
 // Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
@@ -39,8 +40,9 @@ export interface DestinoItem {
   styleUrls: ['./destinos.css']
 })
 export class Destino implements OnInit {
-  // Ruta base del servidor
-  private readonly apiUrl = 'http://localhost:3000/api/destinos';
+
+  // Ruta base de la API
+  private readonly apiUrl = `${enviroment.api}/destinos`;
 
   // Variables de control y datos
   modalAbierto = false;
@@ -58,7 +60,6 @@ export class Destino implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Revisa si es admin y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarDestinos();
   }
@@ -90,14 +91,19 @@ export class Destino implements OnInit {
   // Carga los datos en el modal para editar
   editarDestino(dest: DestinoItem) {
     if (!this.puedeModificar) return;
+
     this.destinoEditando = dest;
-    this.nuevoDestino = { descripcion: dest.descripcion };
+    this.nuevoDestino = {
+      descripcion: dest.descripcion
+    };
+
     this.modalAbierto = true;
   }
 
   // Elimina un destino
   eliminarDestino(dest: DestinoItem) {
     if (!this.puedeModificar || !dest.id_destino) return;
+
     if (!confirm(`¿Eliminar el destino: ${dest.descripcion}?`)) return;
 
     this.http.delete(`${this.apiUrl}/${dest.id_destino}`).subscribe({
@@ -115,15 +121,19 @@ export class Destino implements OnInit {
     if (!this.puedeModificar) return;
 
     const descLimpia = this.nuevoDestino.descripcion.trim();
+
     if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
-    const payload = { descripcion: descLimpia };
+    const payload = {
+      descripcion: descLimpia
+    };
 
-    // Si es un destino nuevo
+    // Crear nuevo destino
     if (!this.destinoEditando) {
+
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarDestinos();
@@ -135,9 +145,11 @@ export class Destino implements OnInit {
           alert(msg);
         }
       });
+
     } else {
-      // Si se esta editando uno existente
+
       const id = this.destinoEditando.id_destino;
+
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
           this.cargarDestinos();
@@ -149,12 +161,16 @@ export class Destino implements OnInit {
           alert(msg);
         }
       });
+
     }
   }
 
   // Limpia los datos del formulario
   resetForm() {
-    this.nuevoDestino = { descripcion: '' };
+    this.nuevoDestino = {
+      descripcion: ''
+    };
+
     this.destinoEditando = null;
   }
 }

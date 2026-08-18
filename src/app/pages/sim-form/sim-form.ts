@@ -172,13 +172,13 @@ export class SimForm implements OnInit {
     if (this.isEdit && this.idSim) {
       this.simService.updateSim(this.idSim, this.sim).subscribe({
         next: () => {
-          alert("✅ SIM actualizada e historial registrado correctamente");
+          alert("SIM actualizada e historial registrado correctamente");
           this.router.navigate(['/home']);
         },
         error: (err) => {
           console.error("Error al actualizar:", err);
           const errorMsg = err.error?.error || err.error?.message || "Error al actualizar.";
-          alert("⚠️ Error: " + errorMsg);
+          alert("Error: " + errorMsg);
         }
       });
     } else {

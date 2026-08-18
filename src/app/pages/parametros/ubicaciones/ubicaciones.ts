@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
+import { enviroment } from '../../../../environments/environment';
 
 // Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
@@ -24,9 +25,9 @@ export interface UbicacionItem {
   selector: 'app-ubicacion',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterModule, 
+    CommonModule,
+    FormsModule,
+    RouterModule,
     Header,
     TableModule,
     ButtonModule,
@@ -39,8 +40,9 @@ export interface UbicacionItem {
   styleUrls: ['./ubicaciones.css']
 })
 export class Ubicaciones implements OnInit {
-  // Ruta base del servidor
-  private readonly apiUrl = 'http://localhost:3000/api/ubicaciones';
+
+  // Ruta base de la API
+  private readonly apiUrl = `${enviroment.api}/ubicaciones`;
 
   // Variables de control y datos
   modalAbierto = false;
@@ -49,16 +51,17 @@ export class Ubicaciones implements OnInit {
   puedeModificar = false;
 
   // Objeto para el formulario
-  nuevaUbicacion: UbicacionItem = { descripcion: '' };
+  nuevaUbicacion: UbicacionItem = {
+    descripcion: ''
+  };
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthService, 
+    private http: HttpClient,
+    private authService: AuthService,
     private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Revisa si es admin y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarUbicaciones();
   }
@@ -76,7 +79,8 @@ export class Ubicaciones implements OnInit {
 
   // Abre el modal para crear una nueva ubicacion
   abrirModal() {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
+
     this.resetForm();
     this.modalAbierto = true;
   }
@@ -89,15 +93,20 @@ export class Ubicaciones implements OnInit {
 
   // Carga los datos en el modal para editar
   editarUbicacion(ubi: UbicacionItem) {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
+
     this.ubicacionEditando = ubi;
-    this.nuevaUbicacion = { descripcion: ubi.descripcion };
+    this.nuevaUbicacion = {
+      descripcion: ubi.descripcion
+    };
+
     this.modalAbierto = true;
   }
 
   // Elimina una ubicacion
   eliminarUbicacion(ubi: UbicacionItem) {
-    if (!this.puedeModificar || !ubi.id_ubicacion) return; 
+    if (!this.puedeModificar || !ubi.id_ubicacion) return;
+
     if (!confirm(`¿Eliminar la ubicación: ${ubi.descripcion}?`)) return;
 
     this.http.delete(`${this.apiUrl}/${ubi.id_ubicacion}`).subscribe({
@@ -112,18 +121,22 @@ export class Ubicaciones implements OnInit {
 
   // Guarda o actualiza una ubicacion
   guardarUbicacion() {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
 
     const descLimpia = this.nuevaUbicacion.descripcion.trim();
+
     if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
-    const payload = { descripcion: descLimpia };
+    const payload = {
+      descripcion: descLimpia
+    };
 
-    // Si es una ubicacion nueva
+    // Crear ubicación
     if (!this.ubicacionEditando) {
+
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarUbicaciones();
@@ -135,9 +148,12 @@ export class Ubicaciones implements OnInit {
           alert(msg);
         }
       });
+
     } else {
-      // Si se esta editando una ubicacion existente
+
+      // Actualizar ubicación existente
       const id = this.ubicacionEditando.id_ubicacion;
+
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
           this.cargarUbicaciones();
@@ -149,12 +165,16 @@ export class Ubicaciones implements OnInit {
           alert(msg);
         }
       });
+
     }
   }
 
   // Limpia los datos del formulario
   resetForm() {
-    this.nuevaUbicacion = { descripcion: '' };
+    this.nuevaUbicacion = {
+      descripcion: ''
+    };
+
     this.ubicacionEditando = null;
   }
 }

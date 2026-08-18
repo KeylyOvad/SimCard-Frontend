@@ -55,7 +55,7 @@ export class Home implements OnInit {
     private router: Router,
     private simService: SimService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef // <--- 2. Inyectar ChangeDetectorRef
+    private cdr: ChangeDetectorRef // 
   ) {}
 
   ngOnInit(): void {
@@ -185,7 +185,7 @@ export class Home implements OnInit {
       next: (data) => {
         this.historialSim = data;
         this.mostrarModalHistorial = true;
-        this.cdr.detectChanges(); // <--- También actualizamos al abrir el modal
+        this.cdr.detectChanges(); //También se actualiza al abrir el modal
       },
       error: () => alert('Error al cargar historial.')
     });

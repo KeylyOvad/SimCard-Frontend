@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Sim } from '../interceptors/models/sim.model';
+import { enviroment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +10,12 @@ import { Sim } from '../interceptors/models/sim.model';
 export class SimService {
 
   // Rutas base para las peticiones API
-  private apiUrl = 'http://localhost:3000/api/sims';
-  private baseUrl = 'http://localhost:3000/api'; 
+  private apiUrl = `${enviroment.api}/sims`;
+  private baseUrl = enviroment.api;
 
   constructor(private http: HttpClient) {}
 
-  //  Operaciones CRUD para SIM
+  // Operaciones CRUD para SIM
 
   // Obtener todas las SIMs
   getSims(): Observable<Sim[]> {
@@ -46,64 +47,64 @@ export class SimService {
     return this.http.get<any[]>(`${this.apiUrl}/${id}/historial`);
   }
 
-  // --- Listas auxiliares para desplegables ---
+  // Listas auxiliares
 
-  // Obtener lista de operadores
   getOperadores(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/operadores`);
   }
 
-  // Obtener lista de planes
   getPlanes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/planes`);
   }
 
-  // Obtener lista de capacidades
   getCapacidades(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/capacidad`);
   }
 
-  // Obtener lista de estados
   getEstados(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/estados`);
   }
 
-  // Obtener tipos de SIM
   getTiposSim(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/tiposim`);
   }
 
-  // Obtener lista de responsables
   getResponsables(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/responsables`);
   }
 
-  // Obtener lista de ubicaciones
   getUbicaciones(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/ubicaciones`);
   }
 
-  // Obtener lista de destinos
   getDestinos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/destinos`);
   }
 
-  // Carga masiva y reportes 
+  // Carga masiva
 
-  // Importar registros masivos desde un archivo Excel
   importarExcel(formData: FormData): Observable<any> {
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem('token');
+
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`
     });
 
-    return this.http.post(`${this.apiUrl}/importar`, formData, { headers });
+    return this.http.post(
+      `${this.apiUrl}/importar`,
+      formData,
+      { headers }
+    );
   }
 
-  // Descargar el reporte general en archivo Excel
+  // Reportes
+
   descargarReporteExcel(): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/reportes/excel-general`, {
-      responseType: 'blob' 
-    });
+    return this.http.get(
+      `${this.baseUrl}/reportes/excel-general`,
+      {
+        responseType: 'blob'
+      }
+    );
   }
 }

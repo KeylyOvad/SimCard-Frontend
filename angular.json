@@ -19,24 +19,29 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-          "assets": [
-                   {
-            "glob": "*/",
-            "input": "public"
-                    },
-                    {
-            "glob": "*/",
-            "input": "src/assets",
-            "output": "assets"
-                     }
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets"
+              }
             ],
             "styles": [
               "src/styles.css"
-              
             ]
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -49,6 +54,18 @@
                   "maximumError": "8kB"
                 }
               ],
+              "outputHashing": "all"
+            },
+            "qa": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ],
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": false,
               "outputHashing": "all"
             },
             "development": {
@@ -64,6 +81,9 @@
           "configurations": {
             "production": {
               "buildTarget": "simcard-frontend:build:production"
+            },
+            "qa": {
+              "buildTarget": "simcard-frontend:build:qa"
             },
             "development": {
               "buildTarget": "simcard-frontend:build:development"

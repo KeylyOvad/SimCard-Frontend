@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
+import { enviroment } from '../../../../environments/environment';
 
 // Modulos PrimeNG
 import { TableModule } from 'primeng/table';
@@ -31,13 +32,14 @@ import { InputIconModule } from 'primeng/inputicon';
   styleUrls: ['./capacidad.css']
 })
 export class Capacidad implements OnInit {
-  // Estado del modal y listados
+
+  private apiUrl = `${enviroment.api}/capacidad`;
+
   modalAbierto = false;
   capacidades: any[] = [];
   capacidadEditando: any = null;
   puedeModificar = false;
 
-  // Modelo del formulario
   nuevaCapacidad = {
     descripcion: ''
   };
@@ -49,14 +51,12 @@ export class Capacidad implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Revisa si es administrador y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarCapacidades();
   }
 
-  // Trae las capacidades del servidor
   cargarCapacidades() {
-    this.http.get<any[]>('http://localhost:3000/api/capacidad').subscribe({
+    this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.capacidades = data;
         this.cd.detectChanges();
@@ -65,74 +65,81 @@ export class Capacidad implements OnInit {
     });
   }
 
-  // Abre el modal para crear
   abrirModal() {
     if (!this.puedeModificar) return;
     this.resetForm();
     this.modalAbierto = true;
   }
 
-  // Cierra el modal y limpia datos
   cerrarModal() {
     this.modalAbierto = false;
     this.resetForm();
   }
 
-  // Carga datos en el modal para editar
   editarCapacidad(capacidad: any) {
     if (!this.puedeModificar) return;
+
     this.capacidadEditando = capacidad;
     this.nuevaCapacidad = {
       descripcion: capacidad.descripcion
     };
+
     this.modalAbierto = true;
   }
 
-  // Elimina un registro
   eliminarCapacidad(capacidad: any) {
     if (!this.puedeModificar) return;
+
     if (!confirm(`¿Eliminar la capacidad ${capacidad.descripcion}?`)) return;
 
-    this.http.delete(`http://localhost:3000/api/capacidad/${capacidad.id_capacidad}`).subscribe({
+    this.http.delete(`${this.apiUrl}/${capacidad.id_capacidad}`).subscribe({
       next: () => this.cargarCapacidades(),
-      error: (err) => alert(err.error?.message || 'Error al eliminar capacidad')
+      error: (err) =>
+        alert(err.error?.message || 'Error al eliminar capacidad')
     });
   }
 
-  // Guarda o actualiza un registro
   guardarCapacidad() {
     if (!this.puedeModificar) return;
+
     if (!this.nuevaCapacidad.descripcion.trim()) {
       alert('Completa la descripción');
       return;
     }
 
-    const payload = { descripcion: this.nuevaCapacidad.descripcion };
+    const payload = {
+      descripcion: this.nuevaCapacidad.descripcion
+    };
 
-    // Crea un nuevo registro
     if (!this.capacidadEditando) {
-      this.http.post('http://localhost:3000/api/capacidad', payload).subscribe({
+      this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarCapacidades();
           this.cerrarModal();
         },
-        error: (err) => alert(err.error?.message || 'Fallo al crear capacidad.')
+        error: (err) =>
+          alert(err.error?.message || 'Fallo al crear capacidad.')
       });
     } else {
-      // Actualiza un registro existente
-      this.http.put(`http://localhost:3000/api/capacidad/${this.capacidadEditando.id_capacidad}`, payload).subscribe({
+      this.http.put(
+        `${this.apiUrl}/${this.capacidadEditando.id_capacidad}`,
+        payload
+      ).subscribe({
         next: () => {
           this.cargarCapacidades();
           this.cerrarModal();
         },
-        error: (err) => alert(err.error?.message || 'Fallo al actualizar capacidad.')
+        error: (err) =>
+          alert(err.error?.message || 'Fallo al actualizar capacidad.')
       });
     }
   }
 
-  // Limpia los campos del formulario
   resetForm() {
-    this.nuevaCapacidad = { descripcion: '' };
+    this.nuevaCapacidad = {
+      descripcion: ''
+    };
+
     this.capacidadEditando = null;
   }
 }

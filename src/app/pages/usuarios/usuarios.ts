@@ -4,8 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../shared/header/header';
 import { AuthService } from '../../services/auth.service';
+import { enviroment } from '../../../environments/environment';
 
-// Modulos PrimeNG v21
+// Modulos PrimeNG 
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -35,8 +36,9 @@ import { SelectModule } from 'primeng/select';
   styleUrls: ['./usuarios.css']
 })
 export class UsuariosComponent implements OnInit {
+
   // Ruta de la API
-  private apiUrl = 'http://localhost:3000/api/usuarios';
+  private apiUrl = `${enviroment.api}/usuarios`;
 
   // Variables de control y listas
   searchText = '';
@@ -74,7 +76,6 @@ export class UsuariosComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Verifica rol de administrador y carga lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarUsuarios();
   }
@@ -84,17 +85,21 @@ export class UsuariosComponent implements OnInit {
     this.http.get<any[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.usuarios = data.map((u) => {
-          const esActivo = u.estado === 1 || u.estado === '1' || u.estado === 'Activo';
+          const esActivo =
+            u.estado === 1 ||
+            u.estado === '1' ||
+            u.estado === 'Activo';
 
           return {
             ...u,
             nombreCompleto: `${u.nombres || ''} ${u.apellidos || ''}`.trim(),
             estado: esActivo ? 'Activo' : 'Inactivo',
-            rolTexto: Number(u.id_rol) === 1 ? 'Administrador' : 'Usuario'
+            rolTexto: Number(u.id_rol) === 1
+              ? 'Administrador'
+              : 'Usuario'
           };
         });
-        
-        // Forma segura de notificar cambios
+
         this.cd.markForCheck();
       },
       error: (err) => console.error('Error al cargar usuarios:', err)
@@ -104,9 +109,9 @@ export class UsuariosComponent implements OnInit {
   // Abre el modal para crear usuario
   abrirModal() {
     if (!this.puedeModificar) return;
+
     this.resetForm();
-    
-    // Programado en microtarea para diferir el cambio de estado de la UI
+
     Promise.resolve().then(() => {
       this.modalAbierto = true;
       this.cd.markForCheck();
@@ -117,7 +122,6 @@ export class UsuariosComponent implements OnInit {
   cerrarModal() {
     this.modalAbierto = false;
 
-    // Resetea valores en la siguiente microtarea
     Promise.resolve().then(() => {
       this.resetForm();
       this.cd.markForCheck();
@@ -127,10 +131,13 @@ export class UsuariosComponent implements OnInit {
   // Carga datos de un usuario en el modal para editar
   editarUsuario(usuario: any) {
     if (!this.puedeModificar) return;
+
     this.usuarioEditando = usuario;
 
-    // Normaliza el estado a string exacto
-    const esActivo = usuario.estado === 1 || usuario.estado === '1' || usuario.estado === 'Activo';
+    const esActivo =
+      usuario.estado === 1 ||
+      usuario.estado === '1' ||
+      usuario.estado === 'Activo';
 
     this.nuevoUsuario = {
       nombres: usuario.nombres || '',
@@ -142,7 +149,6 @@ export class UsuariosComponent implements OnInit {
       id_rol: Number(usuario.id_rol)
     };
 
-    // Abre el modal de forma asíncrona segura
     Promise.resolve().then(() => {
       this.modalAbierto = true;
       this.cd.markForCheck();
@@ -152,12 +158,21 @@ export class UsuariosComponent implements OnInit {
   // Elimina o inactiva un usuario
   eliminarUsuario(usuario: any) {
     if (!this.puedeModificar) return;
-    if (!confirm(`¿Está seguro de inactivar o eliminar a ${usuario.nombreCompleto}?`)) return;
+
+    if (
+      !confirm(
+        `¿Está seguro de inactivar o eliminar a ${usuario.nombreCompleto}?`
+      )
+    ) {
+      return;
+    }
 
     this.http.delete(`${this.apiUrl}/${usuario.id_usuario}`).subscribe({
       next: () => this.cargarUsuarios(),
       error: (err) => {
-        const msg = err.error?.message || 'No tienes permisos para realizar esta acción.';
+        const msg =
+          err.error?.message ||
+          'No tienes permisos para realizar esta acción.';
         alert(msg);
       }
     });
@@ -178,8 +193,8 @@ export class UsuariosComponent implements OnInit {
       return;
     }
 
-    // Estado en formato numerico para BD (1 = Activo, 0 = Inactivo)
-    const estadoValor = this.nuevoUsuario.estado === 'Activo' ? 1 : 0;
+    const estadoValor =
+      this.nuevoUsuario.estado === 'Activo' ? 1 : 0;
 
     const payload: any = {
       nombres: nombresLimpios,
@@ -190,13 +205,16 @@ export class UsuariosComponent implements OnInit {
     };
 
     if (!this.usuarioEditando) {
-      // Registrar nuevo usuario
+
       if (!this.nuevoUsuario.contrasena) {
         alert('La contraseña es obligatoria para nuevos usuarios.');
         return;
       }
 
-      if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
+      if (
+        this.nuevoUsuario.contrasena !==
+        this.nuevoUsuario.confirmar
+      ) {
         alert('Las contraseñas no coinciden.');
         return;
       }
@@ -208,25 +226,37 @@ export class UsuariosComponent implements OnInit {
           this.cerrarModal();
           this.cargarUsuarios();
         },
-        error: (err) => alert(err.error?.message || 'Error al crear el usuario.')
+        error: (err) =>
+          alert(err.error?.message || 'Error al crear el usuario.')
       });
 
     } else {
-      // Actualizar usuario existente
-      if (this.nuevoUsuario.contrasena && this.nuevoUsuario.contrasena.trim() !== '') {
-        if (this.nuevoUsuario.contrasena !== this.nuevoUsuario.confirmar) {
+
+      if (
+        this.nuevoUsuario.contrasena &&
+        this.nuevoUsuario.contrasena.trim() !== ''
+      ) {
+        if (
+          this.nuevoUsuario.contrasena !==
+          this.nuevoUsuario.confirmar
+        ) {
           alert('Las contraseñas no coinciden.');
           return;
         }
+
         payload.contrasena = this.nuevoUsuario.contrasena;
       }
 
-      this.http.put(`${this.apiUrl}/${this.usuarioEditando.id_usuario}`, payload).subscribe({
+      this.http.put(
+        `${this.apiUrl}/${this.usuarioEditando.id_usuario}`,
+        payload
+      ).subscribe({
         next: () => {
           this.cerrarModal();
           this.cargarUsuarios();
         },
-        error: (err) => alert(err.error?.message || 'Error al actualizar el usuario.')
+        error: (err) =>
+          alert(err.error?.message || 'Error al actualizar el usuario.')
       });
     }
   }
@@ -242,6 +272,7 @@ export class UsuariosComponent implements OnInit {
       estado: 'Activo',
       id_rol: 1
     };
+
     this.usuarioEditando = null;
   }
 }

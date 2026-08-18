@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Header } from '../../../shared/header/header';
 import { AuthService } from '../../../services/auth.service';
+import { enviroment } from '../../../../environments/environment';
 
 // Modulos de PrimeNG
 import { TableModule } from 'primeng/table';
@@ -24,9 +25,9 @@ export interface PlanItem {
   selector: 'app-planes',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
-    RouterModule, 
+    CommonModule,
+    FormsModule,
+    RouterModule,
     Header,
     TableModule,
     ButtonModule,
@@ -39,8 +40,9 @@ export interface PlanItem {
   styleUrls: ['./planes.css']
 })
 export class Planes implements OnInit {
-  // Ruta base del servidor
-  private readonly apiUrl = 'http://localhost:3000/api/planes';
+
+  // Ruta base de la API
+  private readonly apiUrl = `${enviroment.api}/planes`;
 
   // Variables de control y datos
   modalAbierto = false;
@@ -49,16 +51,17 @@ export class Planes implements OnInit {
   puedeModificar = false;
 
   // Objeto para el formulario
-  nuevoPlan: PlanItem = { descripcion: '' };
+  nuevoPlan: PlanItem = {
+    descripcion: ''
+  };
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService, 
+    private authService: AuthService,
     private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    // Revisa si es admin y carga la lista
     this.puedeModificar = this.authService.esAdmin();
     this.cargarPlanes();
   }
@@ -78,7 +81,8 @@ export class Planes implements OnInit {
 
   // Abre el modal para crear un nuevo plan
   abrirModal() {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
+
     this.resetForm();
     this.modalAbierto = true;
   }
@@ -91,15 +95,20 @@ export class Planes implements OnInit {
 
   // Carga los datos en el modal para editar
   editarPlan(plan: PlanItem) {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
+
     this.planEditando = plan;
-    this.nuevoPlan = { descripcion: plan.descripcion };
+    this.nuevoPlan = {
+      descripcion: plan.descripcion
+    };
+
     this.modalAbierto = true;
   }
 
   // Elimina un plan
   eliminarPlan(plan: PlanItem) {
-    if (!this.puedeModificar || !plan.id_plan) return; 
+    if (!this.puedeModificar || !plan.id_plan) return;
+
     if (!confirm(`¿Eliminar el plan: ${plan.descripcion}?`)) return;
 
     this.http.delete(`${this.apiUrl}/${plan.id_plan}`).subscribe({
@@ -114,18 +123,21 @@ export class Planes implements OnInit {
 
   // Guarda o actualiza un plan
   guardarPlan() {
-    if (!this.puedeModificar) return; 
+    if (!this.puedeModificar) return;
 
     const descLimpia = this.nuevoPlan.descripcion.trim();
+
     if (!descLimpia) {
       alert('Completa la descripción');
       return;
     }
 
-    const payload = { descripcion: descLimpia };
+    const payload = {
+      descripcion: descLimpia
+    };
 
-    // Si es un plan nuevo
     if (!this.planEditando) {
+
       this.http.post(this.apiUrl, payload).subscribe({
         next: () => {
           this.cargarPlanes();
@@ -137,9 +149,11 @@ export class Planes implements OnInit {
           alert(msg);
         }
       });
+
     } else {
-      // Si se esta editando un plan existente
+
       const id = this.planEditando.id_plan;
+
       this.http.put(`${this.apiUrl}/${id}`, payload).subscribe({
         next: () => {
           this.cargarPlanes();
@@ -151,12 +165,16 @@ export class Planes implements OnInit {
           alert(msg);
         }
       });
+
     }
   }
 
   // Limpia los datos del formulario
   resetForm() {
-    this.nuevoPlan = { descripcion: '' };
+    this.nuevoPlan = {
+      descripcion: ''
+    };
+
     this.planEditando = null;
   }
 }

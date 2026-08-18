@@ -1,4 +1,4 @@
-/* --- CONTENEDOR GENERAL --- */
+/* CONTENEDOR GENERAL */
 .page-container {
   padding: 2rem;
   max-width: 1100px;
@@ -22,7 +22,7 @@
   margin: 0;
 }
 
-/* --- TARJETA PRINCIPAL DE CARGA --- */
+/* TARJETA PRINCIPAL DE CARGA */
 .upload-card {
   background: #ffffff;
   padding: 28px;
@@ -39,7 +39,7 @@
   color: #334155;
 }
 
-/* --- ZONA DROPZONE --- */
+/* ZONA DROPZONE */
 .dropzone-area {
   border: 2px dashed #cbd5e1;
   background: #f8fafc;
@@ -87,7 +87,7 @@
   color: #94a3b8;
 }
 
-/* --- BADGE DE ARCHIVO SELECCIONADO --- */
+/* BADGE DE ARCHIVO SELECCIONADO */
 .selected-file-badge {
   display: flex;
   align-items: center;
@@ -124,7 +124,6 @@
   opacity: 0.7;
 }
 
-/* --- CONSOLA Y ESTADOS DE PROCESAMIENTO --- */
 .procesamiento-visible {
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;

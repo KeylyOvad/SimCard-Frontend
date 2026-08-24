@@ -1,0 +1,15 @@
+.col-id-capacidad {
+  width: 15%;
+}
+
+.col-descripcion-capacidad {
+  width: 60%;
+}
+
+.col-acciones-capacidad {
+  width: 25%;
+}
+
+.modal-capacidad {
+  width: 420px;
+}

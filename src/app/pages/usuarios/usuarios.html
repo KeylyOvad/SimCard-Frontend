@@ -114,15 +114,14 @@
 </div>
 
 <!-- Modal para crear o editar un usuario -->
-<p-dialog
-  [visible]="modalAbierto"
-  (visibleChange)="modalAbierto = $event"
-  [modal]="true"
-  [style]="{ width: '520px' }"
-  [draggable]="false"
-  [resizable]="false"
-  styleClass="modal-custom-cens"
-  (onHide)="cerrarModal()"
+<p-dialog 
+  [visible]="modalAbierto" 
+  (visibleChange)="modalAbierto = $event" 
+  [modal]="true" 
+  [draggable]="false" 
+  [resizable]="false" 
+  styleClass="modal-custom-cens" 
+  (onHide)="cerrarModal()" 
 >
   <!-- Titulo del modal -->
   <ng-template pTemplate="header">

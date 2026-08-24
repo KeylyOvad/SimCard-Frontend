@@ -3,17 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
-// Modulos de PrimeNG
-import { MenuModule } from 'primeng/menu';
-import { MenuItem } from 'primeng/api';
-
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule, 
-    RouterModule,
-    MenuModule
+    RouterModule
   ],
   templateUrl: './header.html',
   styleUrls: ['./header.css']

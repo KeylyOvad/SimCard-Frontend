@@ -1,0 +1,15 @@
+.col-id-estado {
+  width: 15%;
+}
+
+.col-descripcion-estado {
+  width: 60%;
+}
+
+.col-acciones-estado {
+  width: 25%;
+}
+
+.modal-estado {
+  width: 420px;
+}

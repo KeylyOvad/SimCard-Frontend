@@ -212,7 +212,20 @@ input:focus, select:focus, textarea:focus {
 .btn-cancelar:hover { 
   background: #dc2626; 
 }
+.modification-field {
+  margin-top: 15px;
+}
+.text-error {
+  color: #e53e3e;
+}
 
+.text-success {
+  color: #38a169;
+}
+
+.modification-label {
+  color: #555;
+}
 /* Ajustes para pantallas de celular */
 @media (max-width: 768px) {
   .grid-main, .grid-2 { 

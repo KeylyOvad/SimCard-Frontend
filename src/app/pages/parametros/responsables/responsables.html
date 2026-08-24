@@ -47,14 +47,18 @@
 
     <!-- Titulos de las columnas -->
     <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 15%;" class="text-center">ID</th>
-        <th pSortableColumn="descripcion" style="width: 60%;" class="text-left">
-          Descripción <p-sortIcon field="descripcion"></p-sortIcon>
-        </th>
-        <th *ngIf="puedeModificar" style="width: 25%;" class="text-center">Acciones</th>
-      </tr>
-    </ng-template>
+  <tr>
+    <th class="text-center col-id-responsable">ID</th>
+       <th
+      pSortableColumn="descripcion"
+      class="text-left col-descripcion-responsable" >Descripción
+      <p-sortIcon field="descripcion"></p-sortIcon>
+    </th>
+     <th *ngIf="puedeModificar" class="text-center col-acciones-responsable">
+      Acciones
+    </th>
+  </tr>
+</ng-template>
 
     <!-- Filas de datos de la tabla -->
     <ng-template pTemplate="body" let-resp let-rowIndex="rowIndex">
@@ -101,10 +105,9 @@
 <p-dialog
   [(visible)]="modalAbierto"
   [modal]="true"
-  [style]="{ width: '420px' }"
   [draggable]="false"
   [resizable]="false"
-  styleClass="modal-custom-cens"
+  styleClass="modal-custom-cens modal-responsable"
   (onHide)="cerrarModal()"
 >
   <!-- Titulo del modal -->

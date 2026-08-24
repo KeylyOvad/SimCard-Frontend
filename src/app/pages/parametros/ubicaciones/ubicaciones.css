@@ -1,0 +1,15 @@
+.col-id-ubicacion {
+  width: 15%;
+}
+
+.col-descripcion-ubicacion {
+  width: 60%;
+}
+
+.col-acciones-ubicacion {
+  width: 25%;
+}
+
+.modal-ubicacion {
+  width: 420px;
+}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
 @import "./estilos/_components.css";
 @import "./estilos/_variables.css";
 @import "primeicons/primeicons.css";
@@ -22,9 +22,8 @@ input, select, textarea, button, p, span, h1, h2, h3, h4, h5, h6, td, th, label,
 
 /* Proteger explícitamente cualquier icono para que mantenga su propia font-family */
 i, .pi, [class*="fa-"], [class*="pi-"] {
-  font-family: PrimeIcons, FontAwesome, "Font Awesome 6 Free", sans-serif !important;
+  font-family: PrimeIcons, sans-serif !important;
 }
-
 /* Ocultar el aviso flotante de licencia si PrimeUI lo inyecta por defecto */
 .p-license-badge, 
 div[class*="PrimeUI"],

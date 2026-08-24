@@ -211,8 +211,8 @@
         </div>
 
         <!-- Razon del cambio si esta editando -->
-        <div class="field-group" *ngIf="isEdit" style="margin-top: 15px;">
-          <label style="color: #555;">Motivo de la modificación *</label>
+        <div class="field-group modification-field" *ngIf="isEdit">
+          <label class="modification-label">Motivo de la modificación *</label>
           <textarea 
             [(ngModel)]="sim['razonModificacion']" 
             name="razonModificacion" 
@@ -221,7 +221,10 @@
             required>
           </textarea>
           <!-- Contador de caracteres -->
-          <small [ngStyle]="{'color': (sim['razonModificacion']?.length < 5) ? '#e53e3e' : '#38a169'}">
+          <small
+              [class.text-error]="sim['razonModificacion']?.length < 5"
+              [class.text-success]="sim['razonModificacion']?.length >= 5"
+            >
             {{ sim['razonModificacion']?.length || 0 }} / 5 caracteres mínimos
           </small>
         </div>

@@ -10,6 +10,10 @@
   margin-top: 0.85rem;
 }
 
+.modal-custom-cens {
+  width: 520px;
+}
+
 /* Estilo para el boton de guardar cuando esta deshabilitado */
 .btn-guardar-custom:disabled {
   background-color: #00b875 !important; 
